@@ -1,4 +1,4 @@
-package jp.or.miya.domain.config.jwt;
+package jp.or.miya.config.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

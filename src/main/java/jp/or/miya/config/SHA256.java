@@ -1,6 +1,5 @@
-package jp.or.miya.domain.config;
+package jp.or.miya.config;
 
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

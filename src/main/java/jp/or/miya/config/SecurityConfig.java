@@ -1,9 +1,7 @@
-package jp.or.miya.domain.config;
+package jp.or.miya.config;
 
-import jp.or.miya.domain.config.jwt.JwtAuthenicationFilter;
-import jp.or.miya.domain.config.jwt.JwtTokenProvider;
-import jp.or.miya.domain.user.Role;
-import lombok.AllArgsConstructor;
+import jp.or.miya.config.jwt.JwtTokenProvider;
+import jp.or.miya.config.jwt.JwtAuthenicationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

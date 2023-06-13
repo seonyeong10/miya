@@ -1,8 +1,10 @@
 package jp.or.miya.web;
 
-import jp.or.miya.domain.config.jwt.JwtToken;
+import jp.or.miya.config.jwt.JwtToken;
 import jp.or.miya.service.login.LoginService;
+import jp.or.miya.web.dto.request.UserRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,19 +19,22 @@ public class LoginApiController {
 
     private final LoginService service;
 
-    @GetMapping("/api/test")
-    public JwtToken test(
-            @RequestBody Map<String, String> loginForm
+    @PostMapping("/api/adm/login")
+    public ResponseEntity<JwtToken> admLogin(
+            @RequestBody UserRequestDto.LoginAdm login
     ) {
-        JwtToken token = service.login(loginForm.get("id"), loginForm.get("pw"));
-        return token;
+        JwtToken token = service.login(login.getEmpNo(), login.getPw());
+        return ResponseEntity.ok(token);
     }
 
-    @PostMapping("/api/adm/login")
-    public JwtToken admLogin(
-            @RequestBody Map<String, String> loginForm
+    /**
+     * @param reissue : 토큰 갱신을 위해서는 accessToken, refreshToken 모두 필요
+     * @return
+     */
+    @PostMapping("/api/reissue")
+    public ResponseEntity<?> reissue(
+            @RequestBody UserRequestDto.Reissue reissue
     ) {
-        JwtToken token = service.login(loginForm.get("id"), loginForm.get("pw"));
-        return token;
+        return service.reissue(reissue);
     }
 }
