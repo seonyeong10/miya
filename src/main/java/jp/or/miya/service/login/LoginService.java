@@ -68,4 +68,26 @@ public class LoginService {
                 .set("RT:" + authentication.getName(), token.getRefreshToken(), token.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
         return ResponseEntity.ok(token);
     }
+
+    public ResponseEntity<?> logout(UserRequestDto.Logout logout) {
+        // 1.AccessToken 검증
+        if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
+            return new ResponseEntity<>("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // 2.AccessToken 으로부터 id 가져오기
+        Authentication authentication = jwtTokenProvider.getAuthenication(logout.getAccessToken());
+
+        // 3.Redis 에서 해당 id로 저장된 refreshToken 이 있는지 확인하고 삭제
+        if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
+            // refreshToken 삭제
+            redisTemplate.delete("RT:" + authentication.getName());
+        }
+
+        // 4.해당 AccessToken 유효시간 가지고 와서 BlakList 로 저장
+        Long expiration = jwtTokenProvider.getExpiration(logout.getAccessToken());
+        redisTemplate.opsForValue()
+                .set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+        return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
 }

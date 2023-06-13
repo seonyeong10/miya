@@ -37,4 +37,11 @@ public class LoginApiController {
     ) {
         return service.reissue(reissue);
     }
+
+    @PostMapping("/api/logout")
+    public ResponseEntity<?> logout(
+            @RequestBody UserRequestDto.Logout logout
+    ) {
+        return service.logout(logout);
+    }
 }
