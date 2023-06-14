@@ -3,6 +3,7 @@ package jp.or.miya.config.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jp.or.miya.web.dto.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -32,7 +32,6 @@ public class JwtTokenProvider {
     private final Key key;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-//        byte[] secretByteKey = Base64.getEncoder().encode(secretKey.getBytes());
         byte[] secretByteKey = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(secretByteKey);
     }
@@ -41,6 +40,7 @@ public class JwtTokenProvider {
     public JwtToken generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        String realName = ((CustomUser) authentication.getPrincipal()).getRealName();
 
         long now = (new Date()).getTime();
         // Access Token 생성
@@ -48,6 +48,7 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
+                .claim("name", realName)
                 .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -91,16 +92,12 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            System.out.println(e);
             log.info("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
-            System.out.println(e);
             log.info("Expired JWT Token", e);
         } catch (UnsupportedJwtException e) {
-            System.out.println(e);
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
-            System.out.println(e);
             log.info("JWT claims string is empty", e);
         }
         return false;
