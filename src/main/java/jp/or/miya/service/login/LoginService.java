@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -25,23 +26,34 @@ public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
 
-    public JwtToken login(String id, String pw) {
+    public ResponseEntity<?> login(String id, String pw) {
+        StringBuilder errorMessage = new StringBuilder();
         // Authenication 객체 생성
         // 1.id, pw를 기반으로 Authentication 객체 생성
         // authenticated : 인증여부 확인, default = false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, pw);
-        // 2.사용자 비밀번호 검증
-        // authenticate 메서드가 실행될 때 CustomUserDetail 에서 만든 loadUserByUsername 메서드 실행
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 3.검증된 인증 정보로 JWT 토큰 생성
-        JwtToken token = jwtTokenProvider.generateToken(authentication);
+        try {
+            // 2.사용자 비밀번호 검증
+            // authenticate 메서드가 실행될 때 CustomUserDetail 에서 만든 loadUserByUsername 메서드 실행
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 4.RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제)
-        redisTemplate.opsForValue()
-                .set("RT:" + authentication.getName(), token.getRefreshToken(), token.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+            // 3.검증된 인증 정보로 JWT 토큰 생성
+            JwtToken token = jwtTokenProvider.generateToken(authentication);
 
-        return token;
+            // 4.RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제)
+            redisTemplate.opsForValue()
+                    .set("RT:" + authentication.getName(), token.getRefreshToken(), token.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+
+            return ResponseEntity.ok(token);
+        } catch (BadCredentialsException e) {
+            // ID, PW 불일치
+            errorMessage.append(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage.toString());
+        } catch (Exception e) {
+            errorMessage.append(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage.toString());
+        }
     }
 
     public ResponseEntity<?> reissue(UserRequestDto.Reissue reissue) {

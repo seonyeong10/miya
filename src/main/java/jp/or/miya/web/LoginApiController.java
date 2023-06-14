@@ -1,13 +1,18 @@
 package jp.or.miya.web;
 
+import jakarta.validation.Valid;
 import jp.or.miya.config.jwt.JwtToken;
 import jp.or.miya.service.login.LoginService;
+import jp.or.miya.web.dto.error.ErrorResult;
 import jp.or.miya.web.dto.request.UserRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 
 @RequiredArgsConstructor
@@ -15,13 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginApiController {
 
     private final LoginService service;
+    private final MessageSource messageSource;
 
     @PostMapping("/api/adm/login")
-    public ResponseEntity<JwtToken> admLogin(
-            @RequestBody UserRequestDto.LoginAdm login
+    public ResponseEntity<?> admLogin(
+            @RequestBody @Valid UserRequestDto.LoginAdm login,
+            BindingResult bindingResult
     ) {
-        JwtToken token = service.login(login.getEmpNo(), login.getPw());
-        return ResponseEntity.ok(token);
+        if(bindingResult.hasErrors()) {
+            ErrorResult errorResult = new ErrorResult(bindingResult, messageSource, Locale.getDefault());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        }
+        return service.login(login.getEmpNo(), login.getPw());
     }
 
     /**
@@ -30,15 +40,25 @@ public class LoginApiController {
      */
     @PostMapping("/api/reissue")
     public ResponseEntity<?> reissue(
-            @RequestBody UserRequestDto.Reissue reissue
+            @RequestBody @Valid UserRequestDto.Reissue reissue,
+            BindingResult bindingResult
     ) {
+        if(bindingResult.hasErrors()) {
+            ErrorResult errorResult = new ErrorResult(bindingResult, messageSource, Locale.getDefault());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        }
         return service.reissue(reissue);
     }
 
     @PostMapping("/api/logout")
     public ResponseEntity<?> logout(
-            @RequestBody UserRequestDto.Logout logout
+            @RequestBody @Valid UserRequestDto.Logout logout,
+            BindingResult bindingResult
     ) {
+        if(bindingResult.hasErrors()) {
+            ErrorResult errorResult = new ErrorResult(bindingResult, messageSource, Locale.getDefault());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        }
         return service.logout(logout);
     }
 }
