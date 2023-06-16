@@ -82,7 +82,8 @@ public class JwtTokenProvider {
                 .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어 Authentication 리턴
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        UserDetails principal = new CustomUser(claims.getSubject(), "", authorities, claims.get("name").toString());
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
@@ -118,4 +119,5 @@ public class JwtTokenProvider {
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
+
 }
