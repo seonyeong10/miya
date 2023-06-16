@@ -19,10 +19,8 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @Entity
 public class Staff extends BaseTimeEntity implements UserDetails {
-
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idx;
+    private Long id;
 
     @Id
     @Column(nullable = false)

@@ -1,4 +1,4 @@
-package jp.or.miya.service.login;
+package jp.or.miya.service.auth;
 
 import jp.or.miya.config.jwt.JwtToken;
 import jp.or.miya.config.jwt.JwtTokenProvider;

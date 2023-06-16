@@ -1,10 +1,9 @@
-package jp.or.miya.service.login;
+package jp.or.miya.service.auth;
 
 import jp.or.miya.domain.staff.Staff;
 import jp.or.miya.domain.staff.StaffRepository;
 import jp.or.miya.web.dto.CustomUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

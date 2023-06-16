@@ -1,8 +1,7 @@
-package jp.or.miya.web;
+package jp.or.miya.web.auth;
 
 import jakarta.validation.Valid;
-import jp.or.miya.config.jwt.JwtToken;
-import jp.or.miya.service.login.LoginService;
+import jp.or.miya.service.auth.LoginService;
 import jp.or.miya.web.dto.error.ErrorResult;
 import jp.or.miya.web.dto.request.UserRequestDto;
 import lombok.RequiredArgsConstructor;
