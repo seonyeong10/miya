@@ -27,12 +27,13 @@ public class ContentsService {
     public ResponseEntity<?> roleContent (HttpServletRequest request) {
         Authentication authentication = jwtTokenProvider.getAuthenication(resolveToken(request));
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        String pSort = request.getParameter("sort");
 
         // 정렬 (Order By)
         Sort sort = Sort.by(Sort.Order.asc("id"), Sort.Order.asc("seq"));
-        List<Contents> contents = repository.findAll(ContentsSpecification.equalsSortNRole("MENU", authorities), sort);
+        List<Contents> contents = repository.findAll(ContentsSpecification.equalsSortNRole(pSort, authorities), sort);
 
-        return ResponseEntity.ok(authorities);
+        return ResponseEntity.ok(contents);
     } // roleContent
 
     private String resolveToken (HttpServletRequest request) {
