@@ -16,19 +16,17 @@ public class FileController {
 
     private final FileService fileService;
 
-    @PostMapping("/api/files/{boardId}")
+    @PostMapping("/api/files/{parentId}")
     public ResponseEntity<?> upload (
-            @PathVariable("boardId") Long boardId,
-            @RequestParam(value = "modEmp") Long modEmp,
+            @PathVariable("parentId") Long parentId,
             @RequestParam(value = "dir") String dir,
             @RequestPart(value = "file") List<MultipartFile> files
     ) {
         AttachFileRequestDto.Upload upload = AttachFileRequestDto.Upload.builder()
                 .dir(dir)
-                .boardId(boardId)
-                .modEmp(modEmp)
+                .parentId(parentId)
                 .build();
 //        return ResponseEntity.ok("");
-        return fileService.upload(upload, files);
+        return fileService.save(upload, files);
     }
 }

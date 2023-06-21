@@ -7,6 +7,7 @@ import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.web.dto.request.MenuRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,6 +59,7 @@ public class MenuControllerTest {
         menuRepository.deleteAll();
     }
 
+    @DisplayName("POST /api/menus 메뉴 저장 테스트")
     @Test
     public void menu_save () throws Exception {
         //given
@@ -78,7 +82,6 @@ public class MenuControllerTest {
                 .build();
 
         String url = "http://localhost" + port + "/api/menus";
-//        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzA2MTIwMDEiLCJhdXRoIjoiUk9MRV9BRE1JTiIsIm5hbWUiOiLlrq7msrsiLCJleHAiOjE3MTg4NDQ0MDF9.1PvpnbJ1e4UOFnOe2E4-cE1JGSgTP06H1OCcHbFnyaM";
 
         //when
         mvc.perform(post(url)
@@ -92,5 +95,24 @@ public class MenuControllerTest {
         assertThat(all.get(0).getCategory()).isEqualTo(category);
         assertThat(all.get(0).getName()).isEqualTo(name);
         assertThat(all.get(0).getPrice()).isEqualTo(price);
+    }
+
+    @DisplayName("GET /api/menus 메뉴 전체 조회")
+    @Test
+    public void menu_findAll () throws Exception {
+        //given
+        String url = "http://localhost:" + port + "/api/menus";
+
+        //when
+        mvc.perform(get(url)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+
+        //then
+        Page<Menu> all = menuRepository.findAll(PageRequest.of(0, 10));
+        assertThat(all.getContent().get(0).getId()).isEqualTo(4);
+        assertThat(all.getContent().get(0).getPart()).isEqualTo("FOODS");
+        assertThat(all.getContent().get(0).getCategory()).isEqualTo("Onigiri");
+        assertThat(all.getContent().get(0).getName()).isEqualTo("테스트");
     }
 }

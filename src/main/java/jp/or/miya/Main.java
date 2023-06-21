@@ -15,8 +15,7 @@ import java.time.ZoneId;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        String name = "text.txt";
-        System.out.println(name.substring(name.lastIndexOf(".")));
+        System.out.println(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli());
 //        Path dir = Paths.get("D:/03. Project/07. Miya/uploads/menus/foods");
 //        Path file = Paths.get("D:/03. Project/07. Miya/uploads/menus/foods/hello.txt");
 //        try {

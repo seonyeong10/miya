@@ -11,14 +11,12 @@ public class AttachFileRequestDto {
     @NoArgsConstructor
     public static class Upload {
         private String dir;
-        private Long boardId;
-        private Long modEmp;
+        private Long parentId;
 
         @Builder
-        public Upload(String dir, Long boardId, Long modEmp) {
+        public Upload(String dir, Long parentId) {
             this.dir = dir;
-            this.boardId = boardId;
-            this.modEmp = modEmp;
+            this.parentId = parentId;
         }
     }
 }

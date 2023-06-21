@@ -59,16 +59,14 @@ public class FileControllerTest {
     public void file_upload () throws Exception {
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-        Integer boardId = 1;
-        Long modEmp = 230612001L;
+        String parentId = "4";
         String dir = "/menus/foods";
 
-        String url = "http://localhost:" + port + "/api/files/" + boardId;
+        String url = "http://localhost:" + port + "/api/files/" + parentId;
 
         mvc.perform(multipart(url)
                 .file(multipartFile1)
                 .file(multipartFile2)
-                .param("modEmp", modEmp.toString())
                 .param("dir", dir)
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.MULTIPART_FORM_DATA))
@@ -78,7 +76,6 @@ public class FileControllerTest {
         List<AttachFile> all = fileRepository.findAll();
         assertThat(all.get(0).getDir()).isEqualTo(dir);
         assertThat(all.get(0).getOrgName()).isEqualTo("hello.txt");
-        assertThat(all.get(0).getModEmp()).isEqualTo(modEmp);
 
     }
 }

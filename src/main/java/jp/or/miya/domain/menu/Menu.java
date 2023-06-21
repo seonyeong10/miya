@@ -2,11 +2,14 @@ package jp.or.miya.domain.menu;
 
 import jakarta.persistence.*;
 import jp.or.miya.domain.BaseTimeEntity;
+import jp.or.miya.domain.file.AttachFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -39,6 +42,9 @@ public class Menu extends BaseTimeEntity {
     private Integer pick;
     @Column
     private String expl;
+
+    @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY)
+    private List<AttachFile> attachFiles = new ArrayList<>();
 
     @Builder
     public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl) {

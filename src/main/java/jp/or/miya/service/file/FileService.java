@@ -2,6 +2,8 @@ package jp.or.miya.service.file;
 
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.AttachFileRepository;
+import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,16 +28,21 @@ public class FileService {
 
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
     private final AttachFileRepository attachFileRepository;
+    private final MenuRepository menuRepository;
 
-    public ResponseEntity<?> upload (AttachFileRequestDto.Upload upload, List<MultipartFile> files) {
+    public ResponseEntity<?> save (AttachFileRequestDto.Upload upload, List<MultipartFile> files) {
+        // 부모테이블 정보 조회
+        Menu menu = menuRepository.findById(upload.getParentId().toString()).orElseThrow(IllegalAccessError::new);
+
+        // 첨부파일 업로드
         for(MultipartFile f : files) {
             String orgName = f.getOriginalFilename();
             String ext = orgName.substring(orgName.lastIndexOf("."));
             AttachFile attachFile = AttachFile.builder()
-                    .boardId(upload.getBoardId())
+//                    .boardId(upload.getBoardId())
+                    .menu(menu)
                     .name(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli() + ext)
                     .orgName(orgName)
-                    .modEmp(upload.getModEmp())
                     .dir(upload.getDir())
                     .build();
 
