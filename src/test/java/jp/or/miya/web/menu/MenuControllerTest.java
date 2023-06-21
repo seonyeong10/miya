@@ -1,4 +1,4 @@
-package jp.or.miya.web;
+package jp.or.miya.web.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -35,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MenuControllerTest {
     @LocalServerPort
     private int port;
+    @Value("${jwt.test.accessToken}")
+    private String token;
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
@@ -76,7 +78,7 @@ public class MenuControllerTest {
                 .build();
 
         String url = "http://localhost" + port + "/api/menus";
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzA2MTIwMDEiLCJhdXRoIjoiUk9MRV9BRE1JTiIsIm5hbWUiOiLlrq7msrsiLCJleHAiOjE2ODcyNTE3MjV9.bDGhanXK0bRusbVqKi5YmS7R0bp-hgWQtOcG-5mEi7Q";
+//        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzA2MTIwMDEiLCJhdXRoIjoiUk9MRV9BRE1JTiIsIm5hbWUiOiLlrq7msrsiLCJleHAiOjE3MTg4NDQ0MDF9.1PvpnbJ1e4UOFnOe2E4-cE1JGSgTP06H1OCcHbFnyaM";
 
         //when
         mvc.perform(post(url)
