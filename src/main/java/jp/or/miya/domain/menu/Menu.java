@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -43,8 +42,9 @@ public class Menu extends BaseTimeEntity {
     @Column
     private String expl;
 
-    @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY)
-    private List<AttachFile> attachFiles = new ArrayList<>();
+    // 카테시안 곱으로 인한 중복 데이터 제거
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AttachFile> attachFiles = new LinkedHashSet<>();
 
     @Builder
     public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl) {

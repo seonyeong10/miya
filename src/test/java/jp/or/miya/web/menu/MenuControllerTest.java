@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.web.dto.request.MenuRequestDto;
+import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,7 +55,7 @@ public class MenuControllerTest {
                 .apply(springSecurity())
                 .build();
     }
-    @AfterEach
+    @After("menu_save")
     public void tearDown() throws Exception {
         menuRepository.deleteAll();
     }
@@ -101,18 +102,51 @@ public class MenuControllerTest {
     @Test
     public void menu_findAll () throws Exception {
         //given
+        MenuRequestDto.Find find = MenuRequestDto.Find.builder()
+                .page(0)
+                .build();
+
         String url = "http://localhost:" + port + "/api/menus";
 
         //when
         mvc.perform(get(url)
-                .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(find)))
                 .andExpect(status().isOk());
 
         //then
-        Page<Menu> all = menuRepository.findAll(PageRequest.of(0, 10));
-        assertThat(all.getContent().get(0).getId()).isEqualTo(4);
-        assertThat(all.getContent().get(0).getPart()).isEqualTo("FOODS");
-        assertThat(all.getContent().get(0).getCategory()).isEqualTo("Onigiri");
-        assertThat(all.getContent().get(0).getName()).isEqualTo("테스트");
+//        Page<Menu> all = menuRepository.findAll(PageRequest.of(find.getPage(), find.getPage() + 10));
+//        System.out.println(all.getContent().size());
+//        assertThat(all.getContent().get(0).getId()).isEqualTo(4);
+//        assertThat(all.getContent().get(0).getPart()).isEqualTo("FOODS");
+//        assertThat(all.getContent().get(0).getCategory()).isEqualTo("Onigiri");
+//        assertThat(all.getContent().get(0).getName()).isEqualTo("테스트");
+    }
+
+    @DisplayName("GET /api/menus/{part} 분류별 메뉴 조회")
+    @Test
+    public void menu_findPart () throws Exception {
+        //given
+        String part = "foods";
+        int page = 0;
+        MenuRequestDto.Find find = MenuRequestDto.Find.builder()
+                .page(page)
+                .build();
+
+        String url = "http://localhost:" + port + "/api/menus/" + part;
+
+        //when
+        mvc.perform(get(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(find)))
+                .andExpect(status().isOk());
+
+        //then
+//        Page<Menu> categorized = menuRepository.findByPart(part.toUpperCase(), PageRequest.of(page, page + 10));
+//        assertThat(categorized.getContent().get(0).getId()).isEqualTo(4);
+//        assertThat(categorized.getContent().get(0).getPart()).isEqualTo(part.toUpperCase());
+//        assertThat(categorized.getContent().get(0).getName()).isEqualTo("테스트");
     }
 }

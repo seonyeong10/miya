@@ -59,4 +59,16 @@ public class MenuRequestDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Find {
+        private int page;
+
+        @Builder
+        public Find (int page) {
+            this.page = page;
+        }
+    }
 }
