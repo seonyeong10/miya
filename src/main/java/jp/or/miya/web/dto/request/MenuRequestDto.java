@@ -1,6 +1,7 @@
 package jp.or.miya.web.dto.request;
 
 import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.menu.Nutrient;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +27,23 @@ public class MenuRequestDto {
         private Integer pick;
         private String expl;
 
+        private Long menuId;
+        private Long calorie;
+        private int carbohydrate;
+        private int sugar;
+        private int protein;
+        private int fat;
+        private int saturFat;
+        private int transFat;
+        private int cholesterol;
+        private int caffeine;
+        private int sodium;
+
         @Builder
-        public Save (String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl) {
+        public Save (
+                String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl,
+                Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium
+         ) {
             this.part = part;
             this.category = category;
             this.name = name;
@@ -40,6 +56,16 @@ public class MenuRequestDto {
             this.season = season;
             this.pick = pick;
             this.expl = expl;
+            this.calorie = calorie;
+            this.carbohydrate = carbohydrate;
+            this.sugar = sugar;
+            this.protein = protein;
+            this.fat = fat;
+            this.saturFat = saturFat;
+            this.transFat = transFat;
+            this.cholesterol = cholesterol;
+            this.caffeine = caffeine;
+            this.sodium = sodium;
         }
 
         public Menu toEntity() {
@@ -56,6 +82,23 @@ public class MenuRequestDto {
                     .season(season)
                     .pick(pick)
                     .expl(expl)
+                    .nutrient(toEntityNutrient())
+                    .build();
+        }
+
+        public Nutrient toEntityNutrient() {
+            return Nutrient.builder()
+//                    .menuId(menuId)
+                    .calorie(calorie)
+                    .carbohydrate(carbohydrate)
+                    .sugar(sugar)
+                    .protein(protein)
+                    .fat(fat)
+                    .saturFat(saturFat)
+                    .transFat(transFat)
+                    .cholesterol(cholesterol)
+                    .caffeine(caffeine)
+                    .sodium(sodium)
                     .build();
         }
     }

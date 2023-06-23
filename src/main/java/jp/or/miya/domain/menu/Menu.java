@@ -45,9 +45,11 @@ public class Menu extends BaseTimeEntity {
     // 카테시안 곱으로 인한 중복 데이터 제거
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AttachFile> attachFiles = new LinkedHashSet<>();
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Nutrient nutrient = new Nutrient();
 
     @Builder
-    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl) {
+    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Nutrient nutrient) {
         this.id = id;
         this.part = part;
         this.category = category;
@@ -61,5 +63,6 @@ public class Menu extends BaseTimeEntity {
         this.season = season;
         this.pick = pick;
         this.expl = expl;
+        this.nutrient = nutrient;
     }
 }

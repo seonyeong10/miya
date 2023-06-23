@@ -27,7 +27,6 @@ public class MenuController {
     public ResponseEntity<Page<Menu>> findAll (
             MenuRequestDto.Find find // GET 은 RequestBody가 없음
     ) {
-        System.out.println(find.getPage());
         return service.findAll(find);
     }
 

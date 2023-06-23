@@ -2,6 +2,8 @@ package jp.or.miya.service.menu;
 
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
+import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.domain.menu.NutrientRepository;
 import jp.or.miya.web.dto.request.MenuRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,17 +19,17 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class MenuService {
     private final MenuRepository menuRepository;
+    private final NutrientRepository nutrientRepository;
 
     @Transactional
     public Long save(MenuRequestDto.Save saveDto) {
-        return menuRepository.save(saveDto.toEntity()).getId();
+        Menu menu = menuRepository.save(saveDto.toEntity());
+        menu.getNutrient().setMenuId(menu.getId());
+        return menu.getId();
     }
 
     public ResponseEntity<Page<Menu>> findAll (MenuRequestDto.Find find) {
         PageRequest page = PageRequest.of(find.getPage(), find.getPage() + 10);
-
-        // QueryDSL
-
         return ResponseEntity.ok(menuRepository.findAll(page));
     }
 
