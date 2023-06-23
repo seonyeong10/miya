@@ -6,6 +6,10 @@ import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,9 +25,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-
 public class FileService {
 
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
@@ -64,5 +68,24 @@ public class FileService {
         }
 
         return ResponseEntity.ok("");
+    }
+
+    /** 이미지 path 조회 */
+    public ResponseEntity<Resource> viewImage (String fileId) {
+        AttachFile attachFile = attachFileRepository.findById(fileId).orElse(null);
+        if(attachFile == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        FileSystemResource resource = new FileSystemResource(BASE_DIR + attachFile.getDir() + File.separator + attachFile.getName());
+        if(!resource.exists()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        HttpHeaders headers = new HttpHeaders();
+        Path path = Paths.get(BASE_DIR + attachFile.getDir() + File.separator + attachFile.getName());
+        try {
+            headers.add("ContentType", Files.probeContentType(path));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 }

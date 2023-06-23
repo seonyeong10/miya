@@ -3,6 +3,7 @@ package jp.or.miya.web.file;
 import jp.or.miya.service.file.FileService;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class FileController {
 
     private final FileService fileService;
 
+    /** 첨부파일 저장  */
     @PostMapping("/api/files/{parentId}")
     public ResponseEntity<?> upload (
             @PathVariable("parentId") Long parentId,
@@ -26,7 +28,14 @@ public class FileController {
                 .dir(dir)
                 .parentId(parentId)
                 .build();
-//        return ResponseEntity.ok("");
         return fileService.save(upload, files);
     }
+
+    /** 이미지 path 조회 */
+    @GetMapping("/api/image/{fileId}")
+    public ResponseEntity<Resource> viewImage (
+            @PathVariable(value = "fileId") String fileId
+    ) {
+        return fileService.viewImage(fileId);
+    };
 }

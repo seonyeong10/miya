@@ -25,16 +25,24 @@ public class MenuController {
 
     @GetMapping("/api/menus")
     public ResponseEntity<Page<Menu>> findAll (
-            @RequestBody MenuRequestDto.Find find
+            MenuRequestDto.Find find // GET 은 RequestBody가 없음
     ) {
+        System.out.println(find.getPage());
         return service.findAll(find);
     }
 
     @GetMapping("/api/menus/{part}")
-    public ResponseEntity<Page<Menu>> findCategory (
+    public ResponseEntity<Page<Menu>> findPart (
             @PathVariable(value = "part") String part,
-            @RequestBody MenuRequestDto.Find find
+            MenuRequestDto.Find find
     ) {
         return service.findPart(part, find);
+    }
+
+    @GetMapping("/api/menus/{category}/{menuId}")
+    public ResponseEntity<Menu> findOne (
+            @PathVariable(value = "menuId") String menuId
+    ) {
+        return service.findOne(menuId);
     }
 }

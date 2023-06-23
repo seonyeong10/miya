@@ -36,4 +36,8 @@ public class MenuService {
                 menuRepository.findByPart(part, PageRequest.of(find.getPage(), find.getPage() + 10))
         );
     }
+
+    public ResponseEntity<Menu> findOne (String menuId) {
+        return ResponseEntity.of(menuRepository.findById(menuId));
+    }
 }

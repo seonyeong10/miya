@@ -29,6 +29,7 @@ public class ContentsService {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         String pSort = request.getParameter("sort");
 
+
         // 정렬 (Order By)
         Sort sort = Sort.by(Sort.Order.asc("id"), Sort.Order.asc("seq"));
         List<Contents> contents = repository.findAll(ContentsSpecification.equalsSortNRole(pSort, authorities), sort);
