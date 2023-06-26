@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.domain.menu.Nutrient;
-import jp.or.miya.web.dto.request.MenuRequestDto;
+import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +30,7 @@ import java.util.List;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -141,9 +142,16 @@ public class MenuControllerTest {
 
     @DisplayName("GET /api/menus 메뉴 전체 조회")
     @Test
-    public void menu_findAll () throws Exception {
+    public void menu_findAllById () throws Exception {
         //given
-        MenuRequestDto.Find find = MenuRequestDto.Find.builder()
+        menuRepository.save(Menu.builder()
+                .name("name1")
+                .engName("english1")
+                .part("MENUS")
+                .nutrient(Nutrient.builder().calorie(100L).build())
+                .build());
+
+        SearchRequestDto find = SearchRequestDto.builder()
                 .page(0)
                 .build();
 
@@ -154,15 +162,10 @@ public class MenuControllerTest {
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(find)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
         //then
-//        Page<Menu> all = menuRepository.findAll(PageRequest.of(find.getPage(), find.getPage() + 10));
-//        System.out.println(all.getContent().size());
-//        assertThat(all.getContent().get(0).getId()).isEqualTo(4);
-//        assertThat(all.getContent().get(0).getPart()).isEqualTo("FOODS");
-//        assertThat(all.getContent().get(0).getCategory()).isEqualTo("Onigiri");
-//        assertThat(all.getContent().get(0).getName()).isEqualTo("테스트");
     }
 
     @DisplayName("GET /api/menus/{part} 분류별 메뉴 조회")
@@ -171,7 +174,7 @@ public class MenuControllerTest {
         //given
         String part = "foods";
         int page = 0;
-        MenuRequestDto.Find find = MenuRequestDto.Find.builder()
+        SearchRequestDto find = SearchRequestDto.builder()
                 .page(page)
                 .build();
 
@@ -185,9 +188,29 @@ public class MenuControllerTest {
                 .andExpect(status().isOk());
 
         //then
-//        Page<Menu> categorized = menuRepository.findByPart(part.toUpperCase(), PageRequest.of(page, page + 10));
-//        assertThat(categorized.getContent().get(0).getId()).isEqualTo(4);
-//        assertThat(categorized.getContent().get(0).getPart()).isEqualTo(part.toUpperCase());
-//        assertThat(categorized.getContent().get(0).getName()).isEqualTo("테스트");
+    }
+
+    @DisplayName("GET /api/menus/{part}/{id} 메뉴 조회")
+    @Test
+    public void menu_findOne () throws Exception {
+        // given
+        Menu savedMenu = menuRepository.save(Menu.builder()
+                .name("name1")
+                .engName("english1")
+                .part("MENUS")
+                .nutrient(Nutrient.builder().menuId(60L).calorie(100L).build())
+                .build());
+
+        Long savedId = savedMenu.getId();
+        String url = "http://localhost:" + port + "/api/menus/foods/" + savedId;
+
+        // when
+        mvc.perform(get(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        // then
     }
 }

@@ -1,16 +1,19 @@
 package jp.or.miya.web.menu;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.service.menu.MenuService;
-import jp.or.miya.web.dto.request.MenuRequestDto;
+import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
+import jp.or.miya.web.dto.response.menu.MenuListResponseDto;
+import jp.or.miya.web.dto.response.menu.MenuResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,23 +28,23 @@ public class MenuController {
         return service.save(requestDto, request);
     }
 
-    @GetMapping("/api/menus")
-    public ResponseEntity<Page<Menu>> findAll (
-            MenuRequestDto.Find find // GET 은 RequestBody가 없음
+    @GetMapping("/api/menus") // GET 은 RequestBody가 없음
+    public List<MenuListResponseDto> findAll (
+            SearchRequestDto requestDto
     ) {
-        return service.findAll(find);
+        return service.findAll(requestDto);
     }
 
     @GetMapping("/api/menus/{part}")
-    public ResponseEntity<Page<Menu>> findPart (
+    public List<MenuListResponseDto> findPart (
             @PathVariable(value = "part") String part,
-            MenuRequestDto.Find find
+            SearchRequestDto requestDto
     ) {
-        return service.findPart(part, find);
+        return service.findPart(part, requestDto);
     }
 
     @GetMapping("/api/menus/{part}/{id}")
-    public ResponseEntity<Menu> findOne (
+    public MenuResponseDto findOne (
             @PathVariable(value = "id") Long id
     ) {
         return service.findOne(id);
