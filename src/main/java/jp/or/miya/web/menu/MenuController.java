@@ -1,15 +1,16 @@
 package jp.or.miya.web.menu;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.service.menu.MenuService;
 import jp.or.miya.web.dto.request.MenuRequestDto;
+import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
+import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +19,10 @@ public class MenuController {
 
     @PostMapping("/api/menus")
     public Long save(
-            @RequestBody MenuRequestDto.Save saveDto
-            ) {
-        return service.save(saveDto);
+            @RequestBody MenuSaveRequestDto requestDto,
+            HttpServletRequest request
+    ) {
+        return service.save(requestDto, request);
     }
 
     @GetMapping("/api/menus")
@@ -38,10 +40,19 @@ public class MenuController {
         return service.findPart(part, find);
     }
 
-    @GetMapping("/api/menus/{category}/{menuId}")
+    @GetMapping("/api/menus/{part}/{id}")
     public ResponseEntity<Menu> findOne (
-            @PathVariable(value = "menuId") String menuId
+            @PathVariable(value = "id") Long id
     ) {
-        return service.findOne(menuId);
+        return service.findOne(id);
+    }
+
+    @PutMapping("/api/menus/{part}/{id}")
+    public Long update (
+            @PathVariable(value = "id") Long id,
+            @RequestBody MenuUpdateRequestDto requestDto,
+            HttpServletRequest request
+    ) {
+        return service.update(id, requestDto);
     }
 }

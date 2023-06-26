@@ -30,9 +30,9 @@ public class Nutrient {
     private Menu menu;
 
     @Builder
-    public Nutrient (Long id, Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium) {
+    public Nutrient (Long id, Long menuId, Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium) {
         this.id = id;
-//        this.menuId = menuId;
+        this.menuId = menuId;
         this.calorie = calorie;
         this.carbohydrate = carbohydrate;
         this.sugar = sugar;

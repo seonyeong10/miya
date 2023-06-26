@@ -3,6 +3,7 @@ package jp.or.miya.domain.menu;
 import jakarta.persistence.*;
 import jp.or.miya.domain.BaseTimeEntity;
 import jp.or.miya.domain.file.AttachFile;
+import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,7 @@ public class Menu extends BaseTimeEntity {
     private Integer pick;
     @Column
     private String expl;
+    private Long modEmp;
 
     // 카테시안 곱으로 인한 중복 데이터 제거
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,7 +51,7 @@ public class Menu extends BaseTimeEntity {
     private Nutrient nutrient = new Nutrient();
 
     @Builder
-    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Nutrient nutrient) {
+    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp, Nutrient nutrient) {
         this.id = id;
         this.part = part;
         this.category = category;
@@ -63,6 +65,23 @@ public class Menu extends BaseTimeEntity {
         this.season = season;
         this.pick = pick;
         this.expl = expl;
+        this.modEmp = modEmp;
         this.nutrient = nutrient;
+    }
+
+    public void update (Long id, MenuUpdateRequestDto dto) {
+        Menu update = dto.toEntity(id);
+        this.name = update.getName();
+        this.engName = update.getEngName();
+        this.temp = update.getTemp();
+        this.sizes = update.getSizes();
+        this.saleStartDt = update.getSaleStartDt();
+        this.saleEndDt = update.getSaleEndDt();
+        this.price = update.getPrice();
+        this.season = update.getSeason();
+        this.pick = update.getPick();
+        this.expl = update.getExpl();
+        this.modEmp = update.getModEmp();
+        this.nutrient = update.getNutrient();
     }
 }

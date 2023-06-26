@@ -36,7 +36,7 @@ public class FileService {
 
     public ResponseEntity<?> save (AttachFileRequestDto.Upload upload, List<MultipartFile> files) {
         // 부모테이블 정보 조회
-        Menu menu = menuRepository.findById(upload.getParentId().toString()).orElseThrow(IllegalAccessError::new);
+        Menu menu = menuRepository.findById(upload.getParentId()).orElseThrow(IllegalAccessError::new);
 
         // 첨부파일 업로드
         for(MultipartFile f : files) {

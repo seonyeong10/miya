@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
+import jp.or.miya.domain.menu.Nutrient;
 import jp.or.miya.web.dto.request.MenuRequestDto;
-import org.aspectj.lang.annotation.After;
+import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
+import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,10 +28,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -55,9 +53,9 @@ public class MenuControllerTest {
                 .apply(springSecurity())
                 .build();
     }
-    @After("menu_save")
+    @AfterEach()
     public void tearDown() throws Exception {
-//        menuRepository.deleteAll();
+        menuRepository.deleteAll();
     }
 
     @DisplayName("POST /api/menus 메뉴 저장 테스트")
@@ -74,7 +72,7 @@ public class MenuControllerTest {
 
         Long calorie = 1000L;
 
-        MenuRequestDto.Save requestDto = MenuRequestDto.Save.builder()
+        MenuSaveRequestDto requestDto = MenuSaveRequestDto.builder()
                 .part(part)
                 .category(category)
                 .name(name)
@@ -95,10 +93,50 @@ public class MenuControllerTest {
                 .andExpect(status().isOk());
 
         //then
-//        List<Menu> all = menuRepository.findAll();
-//        assertThat(all.get(0).getCategory()).isEqualTo("Udon");
-//        assertThat(all.get(0).getName()).isEqualTo("우동");
-//        assertThat(all.get(0).getPrice()).isEqualTo(200L);
+        List<Menu> all = menuRepository.findAll();
+        assertThat(all.get(0).getCategory()).isEqualTo(category);
+        assertThat(all.get(0).getName()).isEqualTo(name);
+        assertThat(all.get(0).getPrice()).isEqualTo(price);
+        assertThat(all.get(0).getModEmp()).isEqualTo(230612001L);
+        assertThat(all.get(0).getNutrient().getCalorie()).isEqualTo(calorie);
+    }
+
+    @DisplayName("PUT /api/menus/{category}/{id} 메뉴 수정")
+    @Test
+    public void menu_update () throws Exception {
+        // given
+        Menu savedMenu = menuRepository.save(Menu.builder()
+                        .name("name")
+                        .engName("english")
+                        .part("MENUS")
+                        .nutrient(Nutrient.builder().calorie(100L).build())
+                .build());
+
+        Long updatedId = savedMenu.getId();
+        String expectedName = "name2";
+        String expectedEngName = "english2";
+        Long expectedCalorie = 200L;
+
+        MenuUpdateRequestDto requestDto = MenuUpdateRequestDto.builder()
+                .name(expectedName)
+                .engName(expectedEngName)
+                .calorie(expectedCalorie)
+                .build();
+
+        String url = "http://localhost:" + port + "/api/menus/Onigiri/" + updatedId;
+
+        // when
+        mvc.perform(put(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        // then
+        Menu menu = menuRepository.findById(updatedId).orElseThrow(() -> new IllegalArgumentException("조회 데이터가 없습니다. id = " + updatedId));
+        assertThat(menu.getName()).isEqualTo(expectedName);
+        assertThat(menu.getEngName()).isEqualTo(expectedEngName);
+        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
     }
 
     @DisplayName("GET /api/menus 메뉴 전체 조회")
