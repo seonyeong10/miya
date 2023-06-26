@@ -58,4 +58,12 @@ public class MenuController {
     ) {
         return service.update(id, requestDto);
     }
+
+    @DeleteMapping("/api/menus/{part}/{id}")
+    public Long delete (
+            @PathVariable(value = "id") Long id
+    ) {
+        service.delete(id);
+        return id;
+    }
 }

@@ -63,4 +63,9 @@ public class MenuService {
 
         return new MenuResponseDto(entity);
     }
+
+    public void delete (Long id) {
+        Menu entity = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
+        menuRepository.delete(entity);
+    }
 }
