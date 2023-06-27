@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,7 +25,7 @@ public class MenuUpdateRequestDto {
     private Integer season;
     private Integer pick;
     private String expl;
-
+    private Long modEmp;
     private Long calorie;
     private int carbohydrate;
     private int sugar;
@@ -37,8 +39,9 @@ public class MenuUpdateRequestDto {
 
     @Builder
     public MenuUpdateRequestDto (
-            String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl,
-            Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium
+            String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp,
+            Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium,
+            List<Integer> remove
     ) {
         this.name = name;
         this.engName = engName;
@@ -50,6 +53,7 @@ public class MenuUpdateRequestDto {
         this.season = season;
         this.pick = pick;
         this.expl = expl;
+        this.modEmp = modEmp;
         this.calorie = calorie;
         this.carbohydrate = carbohydrate;
         this.sugar = sugar;

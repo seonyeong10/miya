@@ -24,11 +24,19 @@ public class MenuResponseDto {
     private Integer pick;
     private String expl;
     private Set<FileResponseDto> files;
-    private NutrientResponseDto nutrient;
+    private Long calorie;
+    private Integer carbohydrate;
+    private Integer sugar;
+    private Integer protein;
+    private Integer fat;
+    private Integer saturFat;
+    private Integer transFat;
+    private Integer cholesterol;
+    private Integer caffeine;
+    private Integer sodium;
 
     public MenuResponseDto (Menu entity) {
-        System.out.println(entity.getNutrient());
-
+        NutrientResponseDto nutrient = new NutrientResponseDto(entity.getNutrient());
         this.id = entity.getId();
         this.part = entity.getPart();
         this.category = entity.getCategory();
@@ -42,9 +50,18 @@ public class MenuResponseDto {
         this.season = entity.getSeason();
         this.pick = entity.getPick();
         this.expl = entity.getExpl();
-        this.files = entity.getAttachFiles().stream().sorted()
+        this.files = entity.getAttachFiles().stream()
                 .map(FileResponseDto::new)
                 .collect(Collectors.toSet());
-        this.nutrient = new NutrientResponseDto(entity.getNutrient());
+        this.calorie = nutrient.getCalorie();
+        this.carbohydrate = nutrient.getCarbohydrate();
+        this.sugar = nutrient.getSugar();
+        this.protein = nutrient.getProtein();
+        this.fat = nutrient.getFat();
+        this.saturFat = nutrient.getSaturFat();
+        this.transFat = nutrient.getTransFat();
+        this.cholesterol = nutrient.getCholesterol();
+        this.caffeine = nutrient.getCaffeine();
+        this.sodium = nutrient.getSodium();
     }
 }

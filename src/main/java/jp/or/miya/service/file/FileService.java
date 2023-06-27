@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +72,7 @@ public class FileService {
     }
 
     /** 이미지 path 조회 */
-    public ResponseEntity<Resource> viewImage (String fileId) {
+    public ResponseEntity<Resource> viewImage (Long fileId) {
         AttachFile attachFile = attachFileRepository.findById(fileId).orElse(null);
         if(attachFile == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -87,5 +88,28 @@ public class FileService {
         }
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    /** 파일 삭제 */
+    public Long delete (Long parentId, ArrayList<Long> remove) {
+        for(Long i : remove) {
+            AttachFile attachFile = attachFileRepository.findById(i).orElse(null);
+
+            if(attachFile == null) continue;
+
+            // 파일 삭제
+            Path path = Paths.get(BASE_DIR + attachFile.getDir() + File.separator + attachFile.getName());
+
+            System.out.println(path);
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                log.info(e.getMessage());
+            }
+        }
+        // 저장 데이터 삭제
+        attachFileRepository.deleteAllByIdInBatch(remove);
+
+        return parentId;
     }
 }

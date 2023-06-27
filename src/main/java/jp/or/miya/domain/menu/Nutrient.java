@@ -1,6 +1,7 @@
 package jp.or.miya.domain.menu;
 
 import jakarta.persistence.*;
+import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class Nutrient {
     @Column(name = "menu_id")
     private Long menuId;
     private Long calorie;
+
     private int carbohydrate;
     private int sugar;
     private int protein;
@@ -47,5 +49,18 @@ public class Nutrient {
 
     public void setMenuId(Long menuId) {
         this.menuId = menuId;
+    }
+
+    public void update (MenuUpdateRequestDto dto) {
+        this.calorie = dto.getCalorie();
+        this.carbohydrate = dto.getCarbohydrate();
+        this.sugar = dto.getSugar();
+        this.protein = dto.getProtein();
+        this.fat = dto.getFat();
+        this.saturFat = dto.getSaturFat();
+        this.transFat = dto.getTransFat();
+        this.cholesterol = dto.getCholesterol();
+        this.caffeine = dto.getCaffeine();
+        this.sodium = dto.getSodium();
     }
 }

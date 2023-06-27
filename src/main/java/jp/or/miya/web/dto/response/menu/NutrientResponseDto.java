@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class NutrientResponseDto {
+    private Long calorie;
     private Integer carbohydrate;
     private Integer sugar;
     private Integer protein;
@@ -16,6 +17,7 @@ public class NutrientResponseDto {
     private Integer sodium;
 
     public NutrientResponseDto (Nutrient entity) {
+        this.calorie = entity.getCalorie();
         this.carbohydrate = entity.getCarbohydrate();
         this.sugar = entity.getSugar();
         this.protein = entity.getProtein();

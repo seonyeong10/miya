@@ -56,7 +56,8 @@ public class MenuController {
             @RequestBody MenuUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        return service.update(id, requestDto);
+        System.out.println("update id = " + id);
+        return service.update(id, requestDto, request);
     }
 
     @DeleteMapping("/api/menus/{part}/{id}")

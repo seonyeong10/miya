@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AttachFileRequestDto {
     @Getter
     @Setter
@@ -14,9 +17,21 @@ public class AttachFileRequestDto {
         private Long parentId;
 
         @Builder
-        public Upload(String dir, Long parentId) {
+        public Upload (String dir, Long parentId) {
             this.dir = dir;
             this.parentId = parentId;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Delete {
+        private ArrayList<Long> remove = new ArrayList<>();
+
+        @Builder
+        public Delete (ArrayList<Long> remove) {
+            this.remove = remove;
         }
     }
 }

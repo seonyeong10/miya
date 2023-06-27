@@ -69,19 +69,17 @@ public class Menu extends BaseTimeEntity {
         this.nutrient = nutrient;
     }
 
-    public void update (Long id, MenuUpdateRequestDto dto) {
-        Menu update = dto.toEntity(id);
-        this.name = update.getName();
-        this.engName = update.getEngName();
-        this.temp = update.getTemp();
-        this.sizes = update.getSizes();
-        this.saleStartDt = update.getSaleStartDt();
-        this.saleEndDt = update.getSaleEndDt();
-        this.price = update.getPrice();
-        this.season = update.getSeason();
-        this.pick = update.getPick();
-        this.expl = update.getExpl();
-        this.modEmp = update.getModEmp();
-        this.nutrient = update.getNutrient();
+    public void update (MenuUpdateRequestDto dto) {
+        this.name = dto.getName();
+        this.engName = dto.getEngName();
+        this.temp = dto.getTemp();
+        this.sizes = dto.getSizes();
+        this.saleStartDt = dto.getSaleStartDt();
+        this.saleEndDt = dto.getSaleEndDt();
+        this.price = dto.getPrice();
+        this.season = dto.getSeason();
+        this.pick = dto.getPick();
+        this.expl = dto.getExpl();
+        this.modEmp = dto.getModEmp();
     }
 }

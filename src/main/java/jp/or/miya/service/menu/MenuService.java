@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
+import jp.or.miya.domain.menu.Nutrient;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -31,14 +32,21 @@ public class MenuService {
         // 수정자 등록
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
         Menu menu = menuRepository.save(requestDto.toEntity());
-        menu.getNutrient().setMenuId(menu.getId());
+//        menu.getNutrient().setMenuId(menu.getId());
         return menu.getId();
     }
 
     @Transactional
-    public Long update (Long id, MenuUpdateRequestDto requestDto) {
+    public Long update (Long id, MenuUpdateRequestDto requestDto, HttpServletRequest request) {
+        // 수정자 등록
+        requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
+
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
-        menu.update(id, requestDto);
+        Nutrient nutrient = menu.getNutrient();
+
+        menu.update(requestDto);
+        nutrient.update(requestDto);
+
         return menu.getId();
     }
 

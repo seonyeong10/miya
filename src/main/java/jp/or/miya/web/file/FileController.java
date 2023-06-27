@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,8 +35,17 @@ public class FileController {
     /** 이미지 path 조회 */
     @GetMapping("/api/image/{fileId}")
     public ResponseEntity<Resource> viewImage (
-            @PathVariable(value = "fileId") String fileId
+            @PathVariable(value = "fileId") Long fileId
     ) {
         return fileService.viewImage(fileId);
     };
+
+    /** 첨부파일 삭제 */
+    @DeleteMapping("/api/files/{parentId}")
+    public Long delete (
+            @PathVariable(value = "parentId") Long parentId,
+            @RequestParam(value = "remove") ArrayList<Long> remove
+    ) {
+        return fileService.delete(parentId, remove);
+    }
 }

@@ -1,7 +1,9 @@
 package jp.or.miya.web.file;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.AttachFileRepository;
+import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -51,16 +55,16 @@ public class FileControllerTest {
 
     @AfterEach
     public void tearDown () {
-        fileRepository.deleteAll();
+//        fileRepository.deleteAll();
     }
 
-    @DisplayName("POST /files 첨부파일 업로드 테스트")
+    @DisplayName("POST /files/{parentId} 첨부파일 업로드 테스트")
     @Test
     public void file_upload () throws Exception {
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-        String parentId = "4";
-        String dir = "/menus/foods";
+        String parentId = "62";
+        String dir = "/menus/drinks";
 
         String url = "http://localhost:" + port + "/api/files/" + parentId;
 
@@ -76,6 +80,26 @@ public class FileControllerTest {
         List<AttachFile> all = fileRepository.findAll();
         assertThat(all.get(0).getDir()).isEqualTo(dir);
         assertThat(all.get(0).getOrgName()).isEqualTo("hello.txt");
+    }
 
+    @DisplayName("DELETE /files/{parentId} 첨부파일 삭제 테스트")
+    @Test
+    public void file_delete () throws Exception {
+        //given
+        AttachFileRequestDto.Delete requestDto = AttachFileRequestDto.Delete.builder()
+                .remove(new ArrayList<>(Arrays.asList(11L)))
+                .build();
+
+        String url = "http://localhost:" + port + "/api/files/" + 62;
+
+        //when
+        mvc.perform(delete(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        //then
     }
 }

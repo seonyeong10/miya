@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,8 @@ public class MenuListResponseDto {
         this.season = entity.getSeason();
         this.pick = entity.getPick();
         if(!entity.getAttachFiles().isEmpty()) {
-            this.fileId = entity.getAttachFiles().stream().sorted().collect(Collectors.toList()).get(0).getId();
+//            this.fileId = entity.getAttachFiles().stream().sorted().collect(Collectors.toList()).get(0).getId();
+            this.fileId = List.copyOf(entity.getAttachFiles()).get(0).getId();
         }
     }
 }
