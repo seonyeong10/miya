@@ -1,13 +1,23 @@
 package jp.or.miya.web.dto.request.menu;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,7 +29,11 @@ public class MenuSaveRequestDto {
     private String engName;
     private String temp;
     private String sizes;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime saleStartDt;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime saleEndDt;
     private Long price;
     private Integer season;
@@ -39,10 +53,15 @@ public class MenuSaveRequestDto {
     private int caffeine;
     private int sodium;
 
+    // 첨부파일
+    private String dir;
+    private List<AttachFileRequestDto.Save> attachFiles = new ArrayList<>();
+
     @Builder
     public MenuSaveRequestDto (
             String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp,
-            Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium
+            Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium,
+            String dir
     ) {
         this.part = part;
         this.category = category;
@@ -67,6 +86,7 @@ public class MenuSaveRequestDto {
         this.cholesterol = cholesterol;
         this.caffeine = caffeine;
         this.sodium = sodium;
+        this.dir = dir;
     }
 
     public Menu toEntity() {
@@ -83,6 +103,9 @@ public class MenuSaveRequestDto {
                 .caffeine(caffeine)
                 .sodium(sodium)
                 .build();
+
+        Set<AttachFile> attachFileSet = attachFiles.stream().map(AttachFile::new).collect(Collectors.toSet());
+
         return Menu.builder()
                 .part(part)
                 .category(category)
@@ -98,6 +121,7 @@ public class MenuSaveRequestDto {
                 .expl(expl)
                 .modEmp(modEmp)
                 .nutrient(nutrient)
+                .attachFiles(attachFileSet)
                 .build();
     }
 }

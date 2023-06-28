@@ -3,6 +3,7 @@ package jp.or.miya.web.menu;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.service.menu.MenuService;
+import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +28,16 @@ public class MenuController {
             HttpServletRequest request
     ) {
         return service.save(requestDto, request);
+    }
+
+    @PostMapping("/api/v1/menus")
+    public ResponseEntity<?> saveWithFile (
+            @RequestPart(value = "content") MenuSaveRequestDto requestDto,
+            @RequestPart(value = "file") List<MultipartFile> files,
+            HttpServletRequest request
+    ) {
+        System.out.println(requestDto.getDir());
+        return service.saveWithFile(requestDto, files, request);
     }
 
     @GetMapping("/api/menus") // GET 은 RequestBody가 없음
@@ -56,7 +68,6 @@ public class MenuController {
             @RequestBody MenuUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        System.out.println("update id = " + id);
         return service.update(id, requestDto, request);
     }
 

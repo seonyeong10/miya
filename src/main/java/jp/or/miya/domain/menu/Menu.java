@@ -7,11 +7,13 @@ import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Menu extends BaseTimeEntity {
@@ -51,7 +53,7 @@ public class Menu extends BaseTimeEntity {
     private Nutrient nutrient = new Nutrient();
 
     @Builder
-    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp, Nutrient nutrient) {
+    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp, Nutrient nutrient, Set<AttachFile> attachFiles) {
         this.id = id;
         this.part = part;
         this.category = category;
@@ -67,6 +69,7 @@ public class Menu extends BaseTimeEntity {
         this.expl = expl;
         this.modEmp = modEmp;
         this.nutrient = nutrient;
+        this.attachFiles = attachFiles;
     }
 
     public void update (MenuUpdateRequestDto dto) {

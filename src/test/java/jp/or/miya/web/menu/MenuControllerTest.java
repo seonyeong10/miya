@@ -19,9 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
@@ -100,6 +102,61 @@ public class MenuControllerTest {
         assertThat(all.get(0).getPrice()).isEqualTo(price);
         assertThat(all.get(0).getModEmp()).isEqualTo(230612001L);
         assertThat(all.get(0).getNutrient().getCalorie()).isEqualTo(calorie);
+    }
+
+    @DisplayName("POST /api/v1/menus 메뉴 저장 with File 테스트")
+    @Test
+//    @Transactional // org.hibernate.LazyInitializationException
+    public void menu_saveWithFile () throws Exception {
+        //given
+        String part = "FOODS";
+        String category = "Onigiri";
+        String name = "테스트";
+        String engName = "test";
+        LocalDateTime saleStartDt = LocalDateTime.now();
+        LocalDateTime saleEndDt = saleStartDt.plusDays(20);
+        Long price = 300L;
+        Long calorie = 1000L;
+
+        MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        String dir = "/menus/drinks";
+
+        MenuSaveRequestDto requestDto = MenuSaveRequestDto.builder()
+                .part(part)
+                .category(category)
+                .name(name)
+                .engName(engName)
+                .saleStartDt(saleStartDt)
+                .saleEndDt(saleEndDt)
+                .price(price)
+                .calorie(calorie)
+                .dir(dir)
+                .build();
+
+        MockMultipartFile content = new MockMultipartFile("content", "content", MediaType.APPLICATION_JSON_VALUE, new ObjectMapper().writeValueAsString(requestDto).getBytes());
+
+        String url = "http://localhost:" + port + "/api/v1/menus";
+
+        //when
+        mvc.perform(multipart(url)
+                .file(multipartFile1)
+                .file(multipartFile2)
+                .file(content)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        //then
+        List<Menu> all = menuRepository.findAll();
+        assertThat(all.get(0).getPart()).isEqualTo(part);
+        assertThat(all.get(0).getCategory()).isEqualTo(category);
+        assertThat(all.get(0).getName()).isEqualTo(name);
+        assertThat(all.get(0).getEngName()).isEqualTo(engName);
+        assertThat(all.get(0).getNutrient().getCalorie()).isEqualTo(calorie);
+        assertThat(all.get(0).getAttachFiles().size()).isEqualTo(2);
+        System.out.println("menu_id = " + all.get(0).getNutrient().getMenu());
     }
 
     @DisplayName("PUT /api/menus/{category}/{id} 메뉴 수정")

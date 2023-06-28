@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 @Getter
 @NoArgsConstructor
-@Entity
+//@Entity
 public class StaffLogin implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String empNo;
 
     @Column(nullable = false)

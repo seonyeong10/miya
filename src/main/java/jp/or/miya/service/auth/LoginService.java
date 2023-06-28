@@ -2,7 +2,6 @@ package jp.or.miya.service.auth;
 
 import jp.or.miya.config.jwt.JwtToken;
 import jp.or.miya.config.jwt.JwtTokenProvider;
-import jp.or.miya.domain.user.StaffLoginRepository;
 import jp.or.miya.web.dto.request.UserRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class LoginService {
     private final BCryptPasswordEncoder encoder;
-    private final StaffLoginRepository staffLoginRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;

@@ -26,6 +26,22 @@ public class AttachFileRequestDto {
     @Getter
     @Setter
     @NoArgsConstructor
+    public static class Save {
+        private String name;
+        private String orgName;
+        private String dir;
+
+        @Builder
+        public Save (String name, String orgName, String dir) {
+            this.name = name;
+            this.orgName = orgName;
+            this.dir= dir;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class Delete {
         private ArrayList<Long> remove = new ArrayList<>();
 

@@ -2,13 +2,12 @@ package jp.or.miya.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jp.or.miya.domain.BaseTimeEntity;
 import jp.or.miya.domain.menu.Menu;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jp.or.miya.web.dto.request.AttachFileRequestDto;
+import lombok.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class AttachFile {
@@ -36,5 +35,11 @@ public class AttachFile {
         this.name = name;
         this.orgName = orgName;
         this.dir= dir;
+    }
+
+    public AttachFile(AttachFileRequestDto.Save save) {
+        this.name = save.getName();
+        this.orgName = save.getOrgName();
+        this.dir = save.getDir();
     }
 }
