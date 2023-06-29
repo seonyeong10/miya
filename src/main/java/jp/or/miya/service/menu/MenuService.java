@@ -6,7 +6,7 @@ import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.domain.menu.Nutrient;
-import jp.or.miya.web.dto.request.AttachFileRequestDto;
+import jp.or.miya.lib.FileUtils;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -14,8 +14,6 @@ import jp.or.miya.web.dto.response.menu.MenuListResponseDto;
 import jp.or.miya.web.dto.response.menu.MenuResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -24,16 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +34,7 @@ public class MenuService {
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
     private final MenuRepository menuRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final FileUtils fileUtils;
 
     @Transactional
     public ResponseEntity<?> saveWithFile (MenuSaveRequestDto requestDto, List<MultipartFile> files, HttpServletRequest request) {
@@ -51,8 +42,14 @@ public class MenuService {
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
 
         // 첨부파일 저장
-        Path dir = Paths.get(BASE_DIR + requestDto.getDir());
-        Set<AttachFile> fileList = requestDto.getAttachFiles();
+        Set<AttachFile> attachFiles = requestDto.getAttachFiles();
+        try {
+            fileUtils.saveFiles(attachFiles, files, requestDto.getDir(), null);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
+        }
+        /*
         for(MultipartFile f : files) {
             String orgName = f.getOriginalFilename();
             String ext = orgName.substring(orgName.lastIndexOf("."));
@@ -77,9 +74,10 @@ public class MenuService {
                 return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
             }
         } // for
+         */
 
         // 데이터 저장
-        requestDto.setAttachFiles(fileList);
+        requestDto.setAttachFiles(attachFiles);
         Menu menu = menuRepository.save(requestDto.toEntity());
         // menu_id 업데이트
         Nutrient nutrient = menu.getNutrient();
@@ -98,13 +96,17 @@ public class MenuService {
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
         // List.copyOf remove 호출하면 UnsupportedOperationException 반환
-//        List<AttachFile> attachFiles = Optional.ofNullable(menu.getAttachFiles()).orElseGet(Collections::emptySet)
-//                .stream().collect(Collectors.toList());
         Set<AttachFile> attachFiles = menu.getAttachFiles(); // 기존 첨부파일
         Nutrient nutrient = menu.getNutrient(); // 기존 영양정보
-        Path dir = Paths.get(BASE_DIR + requestDto.getDir()); // 첨부파일 업로드 경로
 
         // 기존 파일 삭제
+        try {
+            fileUtils.deleteFile(attachFiles, requestDto.getRemove());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("파일 삭제 실패", HttpStatus.BAD_REQUEST);
+        }
+        /*
         for(Long i : requestDto.getRemove()) {
             AttachFile removeFile = attachFiles.stream().filter(file -> file.getId() == i).findAny().orElse(null);
 
@@ -118,8 +120,16 @@ public class MenuService {
                 return new ResponseEntity<>("파일 삭제 실패", HttpStatus.BAD_REQUEST);
             }
         } // for
+         */
 
         // 신규 파일 저장
+        try {
+            fileUtils.saveFiles(attachFiles, files, requestDto.getDir(), menu);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
+        }
+        /*
         for(MultipartFile f : files) {
             String orgName = f.getOriginalFilename();
             String ext = orgName.substring(orgName.lastIndexOf("."));
@@ -146,6 +156,7 @@ public class MenuService {
                 return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
             }
         } // for
+         */
 
         // Update
         menu.update(requestDto);
