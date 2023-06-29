@@ -15,6 +15,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class MenuSaveRequestDto {
 
     // 첨부파일
     private String dir;
-    private List<AttachFileRequestDto.Save> attachFiles = new ArrayList<>();
+    private Set<AttachFile> attachFiles = new HashSet<>();
 
     @Builder
     public MenuSaveRequestDto (
@@ -104,7 +105,7 @@ public class MenuSaveRequestDto {
                 .sodium(sodium)
                 .build();
 
-        Set<AttachFile> attachFileSet = attachFiles.stream().map(AttachFile::new).collect(Collectors.toSet());
+//        Set<AttachFile> attachFileSet = attachFiles.stream().map(AttachFile::new).collect(Collectors.toSet());
 
         return Menu.builder()
                 .part(part)
@@ -121,7 +122,7 @@ public class MenuSaveRequestDto {
                 .expl(expl)
                 .modEmp(modEmp)
                 .nutrient(nutrient)
-                .attachFiles(attachFileSet)
+                .attachFiles(attachFiles)
                 .build();
     }
 }

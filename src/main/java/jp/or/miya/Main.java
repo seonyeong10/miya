@@ -11,11 +11,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        System.out.println(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli());
+//        System.out.println(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli());
 //        Path dir = Paths.get("D:/03. Project/07. Miya/uploads/menus/foods");
 //        Path file = Paths.get("D:/03. Project/07. Miya/uploads/menus/foods/hello.txt");
 //        try {

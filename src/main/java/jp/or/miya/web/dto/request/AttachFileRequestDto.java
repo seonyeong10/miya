@@ -1,5 +1,6 @@
 package jp.or.miya.web.dto.request;
 
+import jp.or.miya.domain.file.AttachFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +28,14 @@ public class AttachFileRequestDto {
     @Setter
     @NoArgsConstructor
     public static class Save {
+        private Long menuId;
         private String name;
         private String orgName;
         private String dir;
 
         @Builder
-        public Save (String name, String orgName, String dir) {
+        public Save (Long menuId, String name, String orgName, String dir) {
+            this.menuId = menuId;
             this.name = name;
             this.orgName = orgName;
             this.dir= dir;

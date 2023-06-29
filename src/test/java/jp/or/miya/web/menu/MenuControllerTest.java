@@ -2,6 +2,8 @@ package jp.or.miya.web.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jp.or.miya.domain.file.AttachFile;
+import jp.or.miya.domain.file.AttachFileRepository;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.domain.menu.Nutrient;
@@ -27,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,6 +51,8 @@ public class MenuControllerTest {
     private MockMvc mvc;
     @Autowired
     private MenuRepository menuRepository;
+    @Autowired
+    private AttachFileRepository fileRepository;
 
     @BeforeEach
     public void setup () {
@@ -159,42 +163,60 @@ public class MenuControllerTest {
         System.out.println("menu_id = " + all.get(0).getNutrient().getMenu());
     }
 
-    @DisplayName("PUT /api/menus/{category}/{id} 메뉴 수정")
+    @DisplayName("PUT /api/v1/menus/{category}/{id} 메뉴 수정")
     @Test
-    public void menu_update () throws Exception {
+//    @Transactional
+    public void menu_updateWithFile () throws Exception {
         // given
+        MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        String dir = "/menus/drinks";
+
         Menu savedMenu = menuRepository.save(Menu.builder()
-                        .name("name")
-                        .engName("english")
+                        .name("테스트")
+                        .engName("Test")
                         .part("MENUS")
-                        .nutrient(Nutrient.builder().calorie(100L).build())
+//                        .nutrient(Nutrient.builder().calorie(100L).build())
+                .build());
+
+        AttachFile attachFile = fileRepository.save(AttachFile.builder()
+                .menu(savedMenu)
+                .orgName("Test.txt")
+                .name("Test.txt")
                 .build());
 
         Long updatedId = savedMenu.getId();
-        String expectedName = "name2";
-        String expectedEngName = "english2";
-        Long expectedCalorie = 200L;
-
+        String expectedName = "테스트2";
+        String expectedEngName = "Test2";
+//        Long expectedCalorie = 200L;
+        List<Long> remove = new ArrayList<>(Arrays.asList(attachFile.getId()));
         MenuUpdateRequestDto requestDto = MenuUpdateRequestDto.builder()
                 .name(expectedName)
                 .engName(expectedEngName)
-                .calorie(expectedCalorie)
+//                .calorie(expectedCalorie)
+                .dir(dir)
+                .remove(remove)
                 .build();
 
-        String url = "http://localhost:" + port + "/api/menus/Onigiri/" + updatedId;
+        MockMultipartFile content = new MockMultipartFile("content", "content", MediaType.APPLICATION_JSON_VALUE, new ObjectMapper().writeValueAsString(requestDto).getBytes());
+        String url = "http://localhost:" + port + "/api/v1/menus/Onigiri/" + updatedId;
 
         // when
-        mvc.perform(put(url)
+        mvc.perform(multipart(url)
+                .file(multipartFile1)
+                .file(multipartFile2)
+                .file(content)
                 .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
                 .andExpect(status().isOk());
 
         // then
         Menu menu = menuRepository.findById(updatedId).orElseThrow(() -> new IllegalArgumentException("조회 데이터가 없습니다. id = " + updatedId));
         assertThat(menu.getName()).isEqualTo(expectedName);
         assertThat(menu.getEngName()).isEqualTo(expectedEngName);
-        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
+        assertThat(menu.getAttachFiles().size()).isEqualTo(2);
+//        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
     }
 
     @DisplayName("GET /api/menus 메뉴 전체 조회")

@@ -13,6 +13,7 @@ import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import jp.or.miya.web.dto.response.menu.MenuListResponseDto;
 import jp.or.miya.web.dto.response.menu.MenuResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +31,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MenuService {
@@ -42,26 +46,18 @@ public class MenuService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public Long save(MenuSaveRequestDto requestDto, HttpServletRequest request) {
-        // 수정자 등록
-        requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
-        Menu menu = menuRepository.save(requestDto.toEntity());
-        return menu.getId();
-    }
-
-    @Transactional
     public ResponseEntity<?> saveWithFile (MenuSaveRequestDto requestDto, List<MultipartFile> files, HttpServletRequest request) {
         // 수정자 등록
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
 
         // 첨부파일 저장
         Path dir = Paths.get(BASE_DIR + requestDto.getDir());
-        List<AttachFileRequestDto.Save> fileList = requestDto.getAttachFiles();
+        Set<AttachFile> fileList = requestDto.getAttachFiles();
         for(MultipartFile f : files) {
             String orgName = f.getOriginalFilename();
             String ext = orgName.substring(orgName.lastIndexOf("."));
 
-            AttachFileRequestDto.Save fileSave = AttachFileRequestDto.Save.builder()
+            AttachFile fileSave = AttachFile.builder()
                     .name(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli() + ext)
                     .orgName(orgName)
                     .dir(requestDto.getDir())
@@ -96,17 +92,66 @@ public class MenuService {
     }
 
     @Transactional
-    public Long update (Long id, MenuUpdateRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<?> updateWithFile (Long id, MenuUpdateRequestDto requestDto, List<MultipartFile> files, HttpServletRequest request) {
         // 수정자 등록
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
-        Nutrient nutrient = menu.getNutrient();
+        // List.copyOf remove 호출하면 UnsupportedOperationException 반환
+//        List<AttachFile> attachFiles = Optional.ofNullable(menu.getAttachFiles()).orElseGet(Collections::emptySet)
+//                .stream().collect(Collectors.toList());
+        Set<AttachFile> attachFiles = menu.getAttachFiles(); // 기존 첨부파일
+        Nutrient nutrient = menu.getNutrient(); // 기존 영양정보
+        Path dir = Paths.get(BASE_DIR + requestDto.getDir()); // 첨부파일 업로드 경로
 
+        // 기존 파일 삭제
+        for(Long i : requestDto.getRemove()) {
+            AttachFile removeFile = attachFiles.stream().filter(file -> file.getId() == i).findAny().orElse(null);
+
+            // 파일 삭제
+            Path path = Paths.get(BASE_DIR + removeFile.getDir() + File.separator + removeFile.getName());
+            try {
+                Files.deleteIfExists(path);
+                attachFiles.remove(removeFile);
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                return new ResponseEntity<>("파일 삭제 실패", HttpStatus.BAD_REQUEST);
+            }
+        } // for
+
+        // 신규 파일 저장
+        for(MultipartFile f : files) {
+            String orgName = f.getOriginalFilename();
+            String ext = orgName.substring(orgName.lastIndexOf("."));
+
+            AttachFile fileSave = AttachFile.builder()
+                    .name(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli() + ext)
+                    .orgName(orgName)
+                    .dir(requestDto.getDir())
+                    .menu(menu)
+                    .build();
+
+            Path filePath = Paths.get(BASE_DIR + requestDto.getDir() + File.separator + fileSave.getName());
+
+            // 파일 저장
+            try {
+                if(!Files.isDirectory(dir)) {
+                    Files.createDirectories(dir);
+                }
+
+                f.transferTo(new File(filePath.toString())); // 파일 저장
+                attachFiles.add(fileSave); // DB에 저장할 데이터 추가
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
+            }
+        } // for
+
+        // Update
         menu.update(requestDto);
         nutrient.update(requestDto);
 
-        return menu.getId();
+        return ResponseEntity.ok(menu.getId());
     }
 
     public List<MenuListResponseDto> findAll (SearchRequestDto requestDto) {
