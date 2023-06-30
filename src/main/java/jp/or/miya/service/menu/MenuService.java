@@ -168,7 +168,16 @@ public class MenuService {
     public List<MenuListResponseDto> findAll (SearchRequestDto requestDto) {
         PageRequest page = PageRequest.of(requestDto.getPage(), requestDto.getPage() + 10, Sort.by(Sort.Direction.DESC, "id"));
 
-        return menuRepository.findAll(page).stream()
+
+        return menuRepository.findAllByOrderByIdDesc(page).stream()
+                .map(MenuListResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<MenuListResponseDto> search (SearchRequestDto requestDto) {
+        PageRequest page = PageRequest.of(requestDto.getPage(), requestDto.getPage() + 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        return menuRepository.findAllByKeyword(requestDto.getKeyword(), requestDto.getCategory(), page).stream()
                 .map(MenuListResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -176,7 +185,7 @@ public class MenuService {
     public List<MenuListResponseDto> findPart (String part, SearchRequestDto requestDto) {
         PageRequest page = PageRequest.of(requestDto.getPage(), requestDto.getPage() + 10, Sort.by(Sort.Direction.DESC, "id"));
 
-        return menuRepository.findByPart(part, page).stream()
+        return menuRepository.findByPartOrderByIdDesc(part, page).stream()
                 .map(MenuListResponseDto::new)
                 .collect(Collectors.toList());
     }

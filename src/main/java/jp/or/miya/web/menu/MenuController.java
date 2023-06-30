@@ -28,14 +28,21 @@ public class MenuController {
         return service.saveWithFile(requestDto, files, request);
     }
 
-    @GetMapping("/api/menus") // GET 은 RequestBody가 없음
+    @GetMapping("/api/v1/menus") // GET 은 RequestBody가 없음
     public List<MenuListResponseDto> findAll (
             SearchRequestDto requestDto
     ) {
         return service.findAll(requestDto);
     }
 
-    @GetMapping("/api/menus/{part}")
+    @GetMapping("/api/v1/menus/search")
+    public List<MenuListResponseDto> search (
+            SearchRequestDto requestDto
+    ) {
+        return service.search(requestDto);
+    }
+
+    @GetMapping("/api/v1/menus/{part}")
     public List<MenuListResponseDto> findPart (
             @PathVariable(value = "part") String part,
             SearchRequestDto requestDto
@@ -50,11 +57,9 @@ public class MenuController {
         return service.findOne(id);
     }
 
-//    @PutMapping("/api/v1/menus/{part}/{id}")
     @PostMapping("/api/v1/menus/{part}/{id}")
     public ResponseEntity<?> updateWithFile (
             @PathVariable(value = "id") Long id,
-//            @RequestBody MenuUpdateRequestDto requestDto,
             @RequestPart(value = "content") MenuUpdateRequestDto requestDto,
             @RequestPart(value = "file") List<MultipartFile> files,
             HttpServletRequest request

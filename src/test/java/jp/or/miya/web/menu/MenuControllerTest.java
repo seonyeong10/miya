@@ -219,22 +219,28 @@ public class MenuControllerTest {
 //        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
     }
 
-    @DisplayName("GET /api/menus 메뉴 전체 조회")
+    @DisplayName("GET /api/v1/menus 메뉴 전체 조회")
     @Test
-    public void menu_findAllById () throws Exception {
+    public void menu_findAll () throws Exception {
         //given
+        String name = "name";
+        String category = "Drinks";
+
         menuRepository.save(Menu.builder()
-                .name("name1")
+                .name(name + 1)
                 .engName("english1")
-                .part("MENUS")
+                .part("FOODS")
+                .category("Drinks")
                 .nutrient(Nutrient.builder().calorie(100L).build())
                 .build());
 
         SearchRequestDto find = SearchRequestDto.builder()
                 .page(0)
+                .keyword(name)
+                .category(new ArrayList<>(Arrays.asList(category)))
                 .build();
 
-        String url = "http://localhost:" + port + "/api/menus";
+        String url = "http://localhost:" + port + "/api/v1/menus";
 
         //when
         mvc.perform(get(url)
@@ -245,6 +251,9 @@ public class MenuControllerTest {
                 .andDo(print());
 
         //then
+        List<Menu> all = menuRepository.findAll();
+        assertThat(all.get(0).getName()).isEqualTo(name+1);
+        assertThat(all.get(0).getCategory()).isEqualTo(category);
     }
 
     @DisplayName("GET /api/menus/{part} 분류별 메뉴 조회")

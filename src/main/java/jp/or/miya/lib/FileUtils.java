@@ -2,6 +2,8 @@ package jp.or.miya.lib;
 
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.menu.Menu;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,7 +16,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class FileUtils {
+    @Value("${file.upload.dir}")
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
 
     /**
@@ -64,5 +68,9 @@ public class FileUtils {
             Files.deleteIfExists(path);
             attachFiles.remove(file);
         } // for
+    }
+
+    public String getBaseDir () {
+        return this.BASE_DIR;
     }
 }

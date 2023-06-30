@@ -42,7 +42,7 @@ public class Menu extends BaseTimeEntity {
     private Integer season;
     @Column
     private Integer pick;
-    @Column
+    @Lob
     private String expl;
     private Long modEmp;
 
