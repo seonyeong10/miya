@@ -3,6 +3,7 @@ package jp.or.miya.domain.file;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.staff.Staff;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.*;
 
@@ -26,6 +27,10 @@ public class AttachFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private Menu menu;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Staff staff;
 
     @Builder
     public AttachFile (Long id, Long boardId, Menu menu, String name, String orgName, String dir) {

@@ -17,7 +17,7 @@ public class JwtAdmDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return staffRepository.findById(username)
+        return staffRepository.findByEmpNo(username)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
     }

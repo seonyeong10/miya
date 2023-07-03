@@ -2,6 +2,7 @@ package jp.or.miya.domain.staff;
 
 import jakarta.persistence.*;
 import jp.or.miya.domain.BaseTimeEntity;
+import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.user.Role;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,8 +11,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,57 +23,46 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @Entity
 public class Staff extends BaseTimeEntity implements UserDetails {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Id
     @Column(nullable = false)
-    private String empNo;
-
+    private String empNo; // 사번
     @Column(nullable = false)
-    private String name;
-
-    @Column
-    private String dept;
-
-    @Column
-    private String pos;
-
-    @Column
-    private String pw;
-
-    @Column
-    private Integer post;
-
-    @Column
-    private String addr1;
-
-    @Column
-    private String addr2;
-
-    @Column
-    private Date joinDt;
-
-    @Column
-    private Date resignDt;
-
+    private String name; // 이름
+    private String engName; // 영문이름
+    private String dept; // 부서
+    @Convert(converter = PositionConverter.class)
+    private Position pos; // 직급
+    @Convert(converter = ReponsibilityConverter.class)
+    private Responsibility res; // 직책
+    @Convert(converter = WorkConverter.class)
+    private Work work; // 상태
+    private String ext; // 내선번호
+    private LocalDate joinDt; // 입사일
+    private LocalDate resignDt; // 퇴사일
     @Enumerated(EnumType.STRING)
-    @Column
-    private Role role;
+    private Role role; // 권한
+    private String pw; // 비밀번호
+
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<AttachFile> attachFiles = new LinkedHashSet<>();
 
     @Builder
-    public Staff(String empNo, String name, String dept, String pos, String pw, Integer post, String addr1, String addr2, Date joinDt, Date resignDt, Role role) {
+    public Staff(String empNo, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role, String pw, Set<AttachFile> attachFiles) {
         this.empNo = empNo;
         this.name = name;
+        this.engName = engName;
         this.dept = dept;
         this.pos = pos;
-        this.pw = pw;
-        this.post = post;
-        this.addr1 = addr1;
-        this.addr2 = addr2;
+        this.res = res;
+        this.work = work;
+        this.ext = ext;
         this.joinDt = joinDt;
         this.resignDt = resignDt;
         this.role = role;
+        this.pw = pw;
+        this.attachFiles = attachFiles;
     }
 
     @Builder
