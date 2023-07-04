@@ -14,17 +14,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class StaffSaveRequestDto {
-    private String empNo;
+    private String id;
     private String name;
     private String engName;
     private String dept;
@@ -40,8 +37,8 @@ public class StaffSaveRequestDto {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate resignDt;
     @Builder
-    public StaffSaveRequestDto (String empNo, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role) {
-        this.empNo = empNo;
+    public StaffSaveRequestDto (String id, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role) {
+        this.id = id;
         this.name = name;
         this.engName = engName;
         this.dept = dept;
@@ -54,9 +51,9 @@ public class StaffSaveRequestDto {
         this.role = role;
     }
 
-    public Staff toEntity (Set<AttachFile> attachFiles) {
+    public Staff toEntity () {
         return Staff.builder()
-                .empNo(empNo)
+                .id(id)
                 .name(name)
                 .engName(engName)
                 .dept(dept)
@@ -67,7 +64,6 @@ public class StaffSaveRequestDto {
                 .joinDt(joinDt)
                 .resignDt(resignDt)
                 .role(role)
-                .attachFiles(attachFiles)
                 .build();
     }
 }

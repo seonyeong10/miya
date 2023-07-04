@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Component
@@ -26,10 +27,9 @@ public class FileUtils {
      * @param attachFiles : DB에 저장될 객체
      * @param multipartFiles : request로 전달받은 객체
      * @param dir : 업로드 경로
-     * @param menu : 메뉴 엔티티
      * @throws IOException
      */
-    public void saveFiles (Set<AttachFile> attachFiles, List<MultipartFile> multipartFiles, String dir, Menu menu) throws IOException {
+    public void saveFiles (Set<AttachFile> attachFiles, List<MultipartFile> multipartFiles, String dir) throws IOException {
         Path path = Paths.get(BASE_DIR + dir);
         for(MultipartFile f : multipartFiles) {
             String originalName = f.getOriginalFilename();
@@ -39,7 +39,6 @@ public class FileUtils {
                     .name(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli() + extension)
                     .orgName(originalName)
                     .dir(dir)
-                    .menu(menu != null ? menu : null)
                     .build();
 
             Path filePath = Paths.get(BASE_DIR + dir + File.separator + saveFile.getName());
@@ -61,7 +60,7 @@ public class FileUtils {
      */
     public void deleteFile (Set<AttachFile> attachFiles, List<Long> remove) throws  IOException {
         for(Long i : remove) {
-            AttachFile file = attachFiles.stream().filter(f -> f.getId() == i).findAny().orElse(null);
+            AttachFile file = attachFiles.stream().filter(f -> f.getId() == i).findAny().orElseThrow(() -> new NoSuchElementException("첨부파일이 없습니다. file_id = " + i));
             Path path = Paths.get(BASE_DIR + file.getDir() + File.separator + file.getName());
 
             // 파일 삭제

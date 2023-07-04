@@ -98,8 +98,10 @@ public class StaffControllerTest {
                 .andExpect(status().isOk());
 
         //then
-        Optional<Staff> staff = staffRepository.findById(8L);
-        assertThat(staff.get().getWork()).isEqualTo(work);
+        List<Staff> staff = staffRepository.findAll();
+        assertThat(staff.get(0).getName()).isEqualTo(name);
+        assertThat(staff.get(0).getWork()).isEqualTo(work);
+        assertThat(staff.get(0).getRole()).isEqualTo(role);
     }
 
     @DisplayName("테스트")

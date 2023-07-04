@@ -52,7 +52,6 @@ public class MenuSaveRequestDto {
 
     // 첨부파일
     private String dir;
-    private Set<AttachFile> attachFiles = new HashSet<>();
 
     @Builder
     public MenuSaveRequestDto (
@@ -86,23 +85,7 @@ public class MenuSaveRequestDto {
         this.dir = dir;
     }
 
-    public Menu toEntity() {
-        Nutrient nutrient = Nutrient.builder()
-                .menuId(menuId)
-                .calorie(calorie)
-                .carbohydrate(carbohydrate)
-                .sugar(sugar)
-                .protein(protein)
-                .fat(fat)
-                .saturFat(saturFat)
-                .transFat(transFat)
-                .cholesterol(cholesterol)
-                .caffeine(caffeine)
-                .sodium(sodium)
-                .build();
-
-//        Set<AttachFile> attachFileSet = attachFiles.stream().map(AttachFile::new).collect(Collectors.toSet());
-
+    public Menu toMenuEntity() {
         return Menu.builder()
                 .part(part)
                 .category(category)
@@ -117,8 +100,22 @@ public class MenuSaveRequestDto {
                 .pick(pick)
                 .expl(expl)
                 .modEmp(modEmp)
-                .nutrient(nutrient)
-                .attachFiles(attachFiles)
+                .build();
+    }
+
+    public Nutrient toNutrientEntity (Menu menu) {
+        return Nutrient.builder()
+                .calorie(calorie)
+                .carbohydrate(carbohydrate)
+                .sugar(sugar)
+                .protein(protein)
+                .fat(fat)
+                .saturFat(saturFat)
+                .transFat(transFat)
+                .cholesterol(cholesterol)
+                .caffeine(caffeine)
+                .sodium(sodium)
+                .menu(menu)
                 .build();
     }
 }

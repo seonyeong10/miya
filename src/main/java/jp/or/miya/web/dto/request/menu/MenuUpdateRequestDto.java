@@ -83,38 +83,4 @@ public class MenuUpdateRequestDto {
         this.remove = remove;
     }
 
-    public Menu toEntity (Long id) {
-        Nutrient nutrient = Nutrient.builder()
-                .menuId(id)
-                .calorie(calorie)
-                .carbohydrate(carbohydrate)
-                .sugar(sugar)
-                .protein(protein)
-                .fat(fat)
-                .saturFat(saturFat)
-                .transFat(transFat)
-                .cholesterol(cholesterol)
-                .caffeine(caffeine)
-                .sodium(sodium)
-                .build();
-
-        Set<AttachFile> attachFileSet = attachFiles.stream()
-                .map(AttachFile::new)
-                .collect(Collectors.toSet());
-
-        return Menu.builder()
-                .name(name)
-                .engName(engName)
-                .temp(temp)
-                .sizes(sizes)
-                .saleStartDt(saleStartDt)
-                .saleEndDt(saleEndDt)
-                .price(price)
-                .season(season)
-                .pick(pick)
-                .expl(expl)
-                .nutrient(nutrient)
-                .attachFiles(attachFileSet)
-                .build();
-    }
 }

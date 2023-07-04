@@ -7,6 +7,7 @@ import jp.or.miya.domain.user.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Persistable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,14 +23,15 @@ import java.util.stream.Stream;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Staff extends BaseTimeEntity implements UserDetails {
+public class Staff extends BaseTimeEntity implements UserDetails, Persistable<String> {
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false)
-    private String empNo; // 사번
-    @Column(nullable = false)
+    @Column(name = "emp_no", nullable = false, length = 10)
+    private String id; // 사번
+    @Column(nullable = false, length = 10)
     private String name; // 이름
+    @Column(length = 10)
     private String engName; // 영문이름
     private String dept; // 부서
     @Convert(converter = PositionConverter.class)
@@ -49,8 +51,8 @@ public class Staff extends BaseTimeEntity implements UserDetails {
     private Set<AttachFile> attachFiles = new LinkedHashSet<>();
 
     @Builder
-    public Staff(String empNo, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role, String pw, Set<AttachFile> attachFiles) {
-        this.empNo = empNo;
+    public Staff(String id, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role, String pw, Set<AttachFile> attachFiles) {
+        this.id = id;
         this.name = name;
         this.engName = engName;
         this.dept = dept;
@@ -66,8 +68,8 @@ public class Staff extends BaseTimeEntity implements UserDetails {
     }
 
     @Builder
-    public Staff(String empNo, String pw, String name, Role role) {
-        this.empNo = empNo;
+    public Staff(String id, String pw, String name, Role role) {
+        this.id = id;
         this.pw = pw;
         this.name = name;
         this.role = role;
@@ -85,7 +87,7 @@ public class Staff extends BaseTimeEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.empNo;
+        return this.id;
     }
 
     @Override
@@ -106,5 +108,12 @@ public class Staff extends BaseTimeEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // Persistable
+    @Override
+    public boolean isNew() {
+        // 등록일자가 null 이 아니면 insert
+        return getRegDt() == null;
     }
 }

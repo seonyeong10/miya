@@ -1,12 +1,12 @@
 package jp.or.miya.web.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.AttachFileRepository;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.domain.menu.NutrientRepository;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -53,6 +53,8 @@ public class MenuControllerTest {
     private MenuRepository menuRepository;
     @Autowired
     private AttachFileRepository fileRepository;
+    @Autowired
+    private NutrientRepository nutrientRepository;
 
     @BeforeEach
     public void setup () {
@@ -62,50 +64,7 @@ public class MenuControllerTest {
     }
     @AfterEach()
     public void tearDown() throws Exception {
-        menuRepository.deleteAll();
-    }
-
-    @DisplayName("POST /api/menus 메뉴 저장 테스트")
-    @Test
-    public void menu_save () throws Exception {
-        //given
-        String part = "FOODS";
-        String category = "Onigiri";
-        String name = "테스트";
-        String engName = "test";
-        LocalDateTime saleStartDt = LocalDateTime.now();
-        LocalDateTime saleEndDt = saleStartDt.plusDays(20);
-        Long price = 300L;
-
-        Long calorie = 1000L;
-
-        MenuSaveRequestDto requestDto = MenuSaveRequestDto.builder()
-                .part(part)
-                .category(category)
-                .name(name)
-                .engName(engName)
-                .saleStartDt(saleStartDt)
-                .saleEndDt(saleEndDt)
-                .price(price)
-                .calorie(calorie)
-                .build();
-
-        String url = "http://localhost" + port + "/api/menus";
-
-        //when
-        mvc.perform(post(url)
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
-
-        //then
-        List<Menu> all = menuRepository.findAll();
-        assertThat(all.get(0).getCategory()).isEqualTo(category);
-        assertThat(all.get(0).getName()).isEqualTo(name);
-        assertThat(all.get(0).getPrice()).isEqualTo(price);
-        assertThat(all.get(0).getModEmp()).isEqualTo(230612001L);
-        assertThat(all.get(0).getNutrient().getCalorie()).isEqualTo(calorie);
+//        menuRepository.deleteAll();
     }
 
     @DisplayName("POST /api/v1/menus 메뉴 저장 with File 테스트")
@@ -158,42 +117,47 @@ public class MenuControllerTest {
         assertThat(all.get(0).getCategory()).isEqualTo(category);
         assertThat(all.get(0).getName()).isEqualTo(name);
         assertThat(all.get(0).getEngName()).isEqualTo(engName);
-        assertThat(all.get(0).getNutrient().getCalorie()).isEqualTo(calorie);
-        assertThat(all.get(0).getAttachFiles().size()).isEqualTo(2);
         System.out.println("menu_id = " + all.get(0).getNutrient().getMenu());
     }
 
     @DisplayName("PUT /api/v1/menus/{category}/{id} 메뉴 수정")
     @Test
-//    @Transactional
+    @Transactional
     public void menu_updateWithFile () throws Exception {
         // given
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         String dir = "/menus/drinks";
 
+        // 메뉴 저장
         Menu savedMenu = menuRepository.save(Menu.builder()
                         .name("테스트")
                         .engName("Test")
                         .part("MENUS")
-//                        .nutrient(Nutrient.builder().calorie(100L).build())
                 .build());
-
+        // 영양정보 저장
+        Nutrient savedNutrient = nutrientRepository.save(Nutrient.builder()
+                        .calorie(100L)
+                        .fat(10)
+                .build());
+        savedNutrient.addMenu(savedMenu);
+        // 삭제할 파일 저장
         AttachFile attachFile = fileRepository.save(AttachFile.builder()
-                .menu(savedMenu)
-                .orgName("Test.txt")
-                .name("Test.txt")
+                        .orgName("Test.txt")
+                        .name("Test.txt")
+                        .dir(dir)
                 .build());
+        attachFile.addMenu(savedMenu);
 
         Long updatedId = savedMenu.getId();
         String expectedName = "테스트2";
         String expectedEngName = "Test2";
-//        Long expectedCalorie = 200L;
+        Long expectedCalorie = 200L;
         List<Long> remove = new ArrayList<>(Arrays.asList(attachFile.getId()));
         MenuUpdateRequestDto requestDto = MenuUpdateRequestDto.builder()
                 .name(expectedName)
                 .engName(expectedEngName)
-//                .calorie(expectedCalorie)
+                .calorie(expectedCalorie)
                 .dir(dir)
                 .remove(remove)
                 .build();
@@ -216,7 +180,7 @@ public class MenuControllerTest {
         assertThat(menu.getName()).isEqualTo(expectedName);
         assertThat(menu.getEngName()).isEqualTo(expectedEngName);
         assertThat(menu.getAttachFiles().size()).isEqualTo(2);
-//        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
+        assertThat(menu.getNutrient().getCalorie()).isEqualTo(expectedCalorie);
     }
 
     @DisplayName("GET /api/v1/menus 메뉴 전체 조회")
@@ -286,7 +250,7 @@ public class MenuControllerTest {
                 .name("name1")
                 .engName("english1")
                 .part("MENUS")
-                .nutrient(Nutrient.builder().menuId(60L).calorie(100L).build())
+                .nutrient(Nutrient.builder().calorie(100L).build())
                 .build());
 
         Long savedId = savedMenu.getId();

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class Menu extends BaseTimeEntity {
@@ -53,7 +52,7 @@ public class Menu extends BaseTimeEntity {
     private Nutrient nutrient = new Nutrient();
 
     @Builder
-    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp, Nutrient nutrient, Set<AttachFile> attachFiles) {
+    public Menu (Long id, String part, String category, String name, String engName, String temp, String sizes, LocalDateTime saleStartDt, LocalDateTime saleEndDt, Long price, Integer season, Integer pick, String expl, Long modEmp, Nutrient nutrient) {
         this.id = id;
         this.part = part;
         this.category = category;
@@ -69,7 +68,10 @@ public class Menu extends BaseTimeEntity {
         this.expl = expl;
         this.modEmp = modEmp;
         this.nutrient = nutrient;
-        this.attachFiles = attachFiles;
+    }
+
+    public void addNutrient (Nutrient nutrient) {
+        this.nutrient = nutrient;
     }
 
     public void update (MenuUpdateRequestDto dto) {

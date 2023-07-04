@@ -3,9 +3,11 @@ package jp.or.miya.service.menu;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.file.AttachFile;
+import jp.or.miya.domain.file.AttachFileRepository;
 import jp.or.miya.domain.menu.Menu;
 import jp.or.miya.domain.menu.MenuRepository;
 import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.domain.menu.NutrientRepository;
 import jp.or.miya.lib.FileUtils;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +36,8 @@ import java.util.stream.Collectors;
 public class MenuService {
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
     private final MenuRepository menuRepository;
+    private final NutrientRepository nutrientRepository;
+    private final AttachFileRepository fileRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final FileUtils fileUtils;
 
@@ -42,9 +47,9 @@ public class MenuService {
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
 
         // 첨부파일 저장
-        Set<AttachFile> attachFiles = requestDto.getAttachFiles();
+        Set<AttachFile> attachFiles = new HashSet<>();
         try {
-            fileUtils.saveFiles(attachFiles, files, requestDto.getDir(), null);
+            fileUtils.saveFiles(attachFiles, files, requestDto.getDir());
         } catch (IOException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
@@ -76,15 +81,14 @@ public class MenuService {
         } // for
          */
 
-        // 데이터 저장
-        requestDto.setAttachFiles(attachFiles);
-        Menu menu = menuRepository.save(requestDto.toEntity());
-        // menu_id 업데이트
-        Nutrient nutrient = menu.getNutrient();
-        Set<AttachFile> savedFiles = menu.getAttachFiles();
-
-        nutrient.setMenuId(menu.getId());
-        savedFiles.stream().forEach(file -> file.setMenu(menu));
+        // 메뉴 저장
+        Menu menu = menuRepository.save(requestDto.toMenuEntity()); // insert
+        // 영양정보 저장
+        Nutrient nutrient = requestDto.toNutrientEntity(menu);
+        nutrientRepository.save(nutrient); // insert
+        // 첨부파일 저장
+        attachFiles.stream().forEach(file -> file.addMenu(menu)); // 메뉴 등록
+        fileRepository.saveAll(attachFiles); // insert
 
         return ResponseEntity.ok(menu.getId());
     }
@@ -95,11 +99,11 @@ public class MenuService {
         requestDto.setModEmp(jwtTokenProvider.getUserId(jwtTokenProvider.resolveToken(request)));
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
-        // List.copyOf remove 호출하면 UnsupportedOperationException 반환
+        // (UnsupportedOperationException) List.copyOf 로 생성된 Set 은 수정할 수 없다.
         Set<AttachFile> attachFiles = menu.getAttachFiles(); // 기존 첨부파일
         Nutrient nutrient = menu.getNutrient(); // 기존 영양정보
 
-        // 기존 파일 삭제
+        // 파일 삭제
         try {
             fileUtils.deleteFile(attachFiles, requestDto.getRemove());
         } catch (IOException e) {
@@ -124,7 +128,7 @@ public class MenuService {
 
         // 신규 파일 저장
         try {
-            fileUtils.saveFiles(attachFiles, files, requestDto.getDir(), menu);
+            fileUtils.saveFiles(attachFiles, files, requestDto.getDir());
         } catch (IOException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);

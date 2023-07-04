@@ -8,7 +8,6 @@ import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class AttachFile {
@@ -46,5 +45,23 @@ public class AttachFile {
         this.name = save.getName();
         this.orgName = save.getOrgName();
         this.dir = save.getDir();
+    }
+
+    /**
+     * 직원을 저장한다.
+     * @param staff
+     */
+    public void addStaff (Staff staff) {
+        this.staff = staff;
+        staff.getAttachFiles().add(this);
+    }
+
+    /**
+     * 메뉴를 저장한다.
+     * @param menu
+     */
+    public void addMenu (Menu menu) {
+        this.menu = menu;
+        menu.getAttachFiles().add(this);
     }
 }

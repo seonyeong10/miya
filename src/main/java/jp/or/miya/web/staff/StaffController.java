@@ -24,7 +24,6 @@ public class StaffController {
             @RequestPart(value = "file", required = false) List<MultipartFile> files,
             HttpServletRequest request
     ) {
-        System.out.println("save start ===== empNo : " + requestDto.getEmpNo());
         return service.saveWithFile(requestDto, files);
     }
 }

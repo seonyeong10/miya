@@ -13,10 +13,7 @@ public class Nutrient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "menu_id")
-    private Long menuId;
     private Long calorie;
-
     private int carbohydrate;
     private int sugar;
     private int protein;
@@ -28,13 +25,12 @@ public class Nutrient {
     private int sodium;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id", unique = true, insertable = false, updatable = false)
+    @JoinColumn(name = "menu_id")
     private Menu menu;
 
     @Builder
-    public Nutrient (Long id, Long menuId, Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium) {
+    public Nutrient (Long id, Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium, Menu menu) {
         this.id = id;
-        this.menuId = menuId;
         this.calorie = calorie;
         this.carbohydrate = carbohydrate;
         this.sugar = sugar;
@@ -45,10 +41,12 @@ public class Nutrient {
         this.cholesterol = cholesterol;
         this.caffeine = caffeine;
         this.sodium = sodium;
+        this.menu = menu;
     }
 
-    public void setMenuId(Long menuId) {
-        this.menuId = menuId;
+    public void addMenu (Menu menu) {
+        this.menu = menu;
+        menu.addNutrient(this);
     }
 
     public void update (MenuUpdateRequestDto dto) {

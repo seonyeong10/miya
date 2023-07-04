@@ -17,7 +17,7 @@ public class JwtAdmDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return staffRepository.findByEmpNo(username)
+        return staffRepository.findById(username)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
     }
@@ -25,6 +25,6 @@ public class JwtAdmDetailService implements UserDetailsService {
     // User 데이터가 존재하면 UserDetails 객체로 만들어 리턴
     private UserDetails createUserDetails(Staff staff) {
 //        return new User(staff.getEmpNo(), staff.getPw(), staff.getAuthorities());
-        return new CustomUser(staff.getEmpNo(), staff.getPw(), staff.getAuthorities(), staff.getName());
+        return new CustomUser(staff.getId(), staff.getPw(), staff.getAuthorities(), staff.getName());
     }
 }
