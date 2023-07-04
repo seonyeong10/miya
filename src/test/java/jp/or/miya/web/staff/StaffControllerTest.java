@@ -101,4 +101,10 @@ public class StaffControllerTest {
         Optional<Staff> staff = staffRepository.findById(8L);
         assertThat(staff.get().getWork()).isEqualTo(work);
     }
+
+    @DisplayName("테스트")
+    @Test
+    public void test () throws Exception {
+        System.out.println("test");
+    }
 }
