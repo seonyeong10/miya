@@ -1,14 +1,12 @@
 package jp.or.miya.service.base;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.base.Contents;
-import jp.or.miya.domain.base.ContentsRepository;
+import jp.or.miya.domain.base.repository.ContentsRepository;
 import jp.or.miya.domain.base.ContentsSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

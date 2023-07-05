@@ -1,9 +1,9 @@
 package jp.or.miya.service.file;
 
 import jp.or.miya.domain.file.AttachFile;
-import jp.or.miya.domain.file.AttachFileRepository;
+import jp.or.miya.domain.file.repository.AttachFileRepository;
 import jp.or.miya.domain.menu.Menu;
-import jp.or.miya.domain.menu.MenuRepository;
+import jp.or.miya.domain.menu.repository.MenuRepository;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

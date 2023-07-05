@@ -1,10 +1,9 @@
 package jp.or.miya.service.staff;
 
 import jp.or.miya.domain.file.AttachFile;
-import jp.or.miya.domain.file.AttachFileRepository;
+import jp.or.miya.domain.file.repository.AttachFileRepository;
 import jp.or.miya.domain.staff.Staff;
-import jp.or.miya.domain.staff.StaffRepository;
-import jp.or.miya.domain.staff.Work;
+import jp.or.miya.domain.staff.repository.StaffRepository;
 import jp.or.miya.lib.FileUtils;
 import jp.or.miya.web.dto.request.staff.StaffSaveRequestDto;
 import lombok.RequiredArgsConstructor;

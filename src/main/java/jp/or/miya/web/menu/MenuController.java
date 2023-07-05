@@ -22,10 +22,9 @@ public class MenuController {
     @PostMapping("/api/v1/menus")
     public ResponseEntity<?> saveWithFile (
             @RequestPart(value = "content") MenuSaveRequestDto requestDto,
-            @RequestPart(value = "file") List<MultipartFile> files,
-            HttpServletRequest request
+            @RequestPart(value = "file") List<MultipartFile> files
     ) {
-        return service.saveWithFile(requestDto, files, request);
+        return service.saveWithFile(requestDto, files);
     }
 
     @GetMapping("/api/v1/menus") // GET 은 RequestBody가 없음
@@ -35,19 +34,13 @@ public class MenuController {
         return service.findAll(requestDto);
     }
 
-    @GetMapping("/api/v1/menus/search")
-    public List<MenuListResponseDto> search (
-            SearchRequestDto requestDto
-    ) {
-        return service.search(requestDto);
-    }
-
-    @GetMapping("/api/v1/menus/{part}")
+    @GetMapping("/api/v1/menus/{parentCategoryId}")
     public List<MenuListResponseDto> findPart (
-            @PathVariable(value = "part") String part,
+            @PathVariable(value = "parentCategoryId") Long parentCategoryId,
             SearchRequestDto requestDto
     ) {
-        return service.findPart(part, requestDto);
+        requestDto.setParentCategoryId(parentCategoryId);
+        return service.findAll(requestDto);
     }
 
     @GetMapping("/api/menus/{part}/{id}")
@@ -61,10 +54,9 @@ public class MenuController {
     public ResponseEntity<?> updateWithFile (
             @PathVariable(value = "id") Long id,
             @RequestPart(value = "content") MenuUpdateRequestDto requestDto,
-            @RequestPart(value = "file") List<MultipartFile> files,
-            HttpServletRequest request
+            @RequestPart(value = "file") List<MultipartFile> files
     ) {
-        return service.updateWithFile(id, requestDto, files, request);
+        return service.updateWithFile(id, requestDto, files);
     }
 
     @DeleteMapping("/api/menus/{part}/{id}")

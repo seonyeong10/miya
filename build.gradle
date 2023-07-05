@@ -2,6 +2,7 @@ buildscript {
     ext {
         springBootVersion = '3.1.1'
         lombokVersion = '1.18.24'
+        queryDslVersion = '5.0.0'
     }
     repositories {
         mavenCentral()
@@ -13,6 +14,7 @@ buildscript {
 
 plugins {
     id 'java'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group 'jp.or.miya'
@@ -37,13 +39,11 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
     // jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
-    // QueryDsl 패키지를 정의
-    /*
-    implementation('com.querydsl:querydsl-jpa:5.0.0:jakarta')
-    annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
-    annotationProcessor("jakarta.persistence:jakarta.persistence-api") // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
-    annotationProcessor("jakarta.annotation:jakarta.annotation-api") // java.lang.NoClassDefFoundError (javax.annotation.Generated) 발생 대응
-    */
+    // QueryDsl
+    implementation("com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:${queryDslVersion}:jakarta")
+    annotationProcessor('jakarta.annotation:jakarta.annotation-api:2.1.1') // java.lang.NoClassDefFoundError (javax.annotation.Generated) 발생 대응
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0") // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
     // mariaDB
     implementation('org.mariadb.jdbc:mariadb-java-client:3.1.2')
     // auto reload
@@ -65,11 +65,24 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
-/** clean 태스크 실행 시 QClass 삭제
-clean {
-    delete file('src/main/generated') // 인텔리제이 Accnotation processor 생성물 생성 위치
+compileJava.options.encoding = 'UTF-8'
+
+// QueryDsl Setting
+def generated = 'src/main/generated' // generated 폴더 경로
+// QueryDsl QClass 파일 생성 위치
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+    options.encoding = 'UTF-8'
 }
- */
+// java source set 에 queryDsl QClass 위치 추가
+sourceSets {
+    main.java.srcDirs += [generated]
+}
+// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
+}
+
 test {
     useJUnitPlatform()
 }

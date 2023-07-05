@@ -1,5 +1,6 @@
 package jp.or.miya.web.dto.request;
 
+import jp.or.miya.domain.base.Category;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 public class SearchRequestDto {
     private int page;
-    private List<String> category = new ArrayList<>();
+    private Long parentCategoryId;
+    private List<Long> categoryIds = new ArrayList<>();
     private String keyword;
 
     @Builder
-    public SearchRequestDto (int page, List<String> category, String keyword) {
+    public SearchRequestDto (int page, Long parentCategoryId, List<Long> categoryIds, String keyword) {
         this.page = page;
-        this.category = category;
+        this.parentCategoryId = parentCategoryId;
+        this.categoryIds = categoryIds;
         this.keyword = keyword;
     }
 }

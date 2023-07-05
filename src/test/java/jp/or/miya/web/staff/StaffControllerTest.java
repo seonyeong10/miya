@@ -2,7 +2,11 @@ package jp.or.miya.web.staff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.or.miya.domain.staff.*;
-import jp.or.miya.domain.user.Role;
+import jp.or.miya.domain.staff.enums.Position;
+import jp.or.miya.domain.staff.enums.Responsibility;
+import jp.or.miya.domain.staff.enums.Work;
+import jp.or.miya.domain.staff.repository.StaffRepository;
+import jp.or.miya.domain.user.enums.Role;
 import jp.or.miya.web.dto.request.staff.StaffSaveRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -68,7 +72,7 @@ public class StaffControllerTest {
         Responsibility res = Responsibility.NONE;
         Work work = Work.WORK;
         Role role = Role.USER;
-        LocalDate joinDt = LocalDate.now();
+        LocalDateTime startDate = LocalDateTime.now();
         String ext = "031)222-1234";
 
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
@@ -80,7 +84,7 @@ public class StaffControllerTest {
                 .role(role)
                 .pos(pos)
                 .res(res)
-                .joinDt(joinDt)
+                .startDate(startDate)
                 .ext(ext)
                 .build();
 

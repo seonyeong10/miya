@@ -1,7 +1,7 @@
 package jp.or.miya.web.base;
 
 import jp.or.miya.domain.base.Contents;
-import jp.or.miya.domain.base.ContentsRepository;
+import jp.or.miya.domain.base.repository.ContentsRepository;
 import jp.or.miya.domain.base.ContentsSpecification;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

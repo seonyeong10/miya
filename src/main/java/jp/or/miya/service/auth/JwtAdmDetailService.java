@@ -1,7 +1,7 @@
 package jp.or.miya.service.auth;
 
 import jp.or.miya.domain.staff.Staff;
-import jp.or.miya.domain.staff.StaffRepository;
+import jp.or.miya.domain.staff.repository.StaffRepository;
 import jp.or.miya.web.dto.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -2,7 +2,7 @@ package jp.or.miya.web.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.or.miya.domain.file.AttachFile;
-import jp.or.miya.domain.file.AttachFileRepository;
+import jp.or.miya.domain.file.repository.AttachFileRepository;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,5 @@
 package jp.or.miya;
 
-import jp.or.miya.domain.staff.Work;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

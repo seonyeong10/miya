@@ -24,7 +24,7 @@ public class Nutrient {
     private int caffeine;
     private int sodium;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
 

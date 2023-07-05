@@ -4,18 +4,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import jp.or.miya.domain.file.AttachFile;
-import jp.or.miya.domain.staff.Position;
-import jp.or.miya.domain.staff.Responsibility;
-import jp.or.miya.domain.staff.Staff;
-import jp.or.miya.domain.staff.Work;
-import jp.or.miya.domain.user.Role;
+import jp.or.miya.domain.staff.*;
+import jp.or.miya.domain.staff.enums.Position;
+import jp.or.miya.domain.staff.enums.Responsibility;
+import jp.or.miya.domain.staff.enums.Work;
+import jp.or.miya.domain.user.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class StaffSaveRequestDto {
     private String id;
     private String name;
     private String engName;
-    private String dept;
+    private Team team;
     private Position pos;
     private Responsibility res;
     private Work work;
@@ -32,22 +32,22 @@ public class StaffSaveRequestDto {
     private Role role = Role.USER;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate joinDt;
+    private LocalDateTime startDate;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate resignDt;
+    private LocalDateTime endDate;
     @Builder
-    public StaffSaveRequestDto (String id, String name, String engName, String dept, Position pos, Responsibility res, Work work, String ext, LocalDate joinDt, LocalDate resignDt, Role role) {
+    public StaffSaveRequestDto (String id, String name, String engName, Team team, Position pos, Responsibility res, Work work, String ext, LocalDateTime startDate, LocalDateTime endDate, Role role) {
         this.id = id;
         this.name = name;
         this.engName = engName;
-        this.dept = dept;
+        this.team = team;
         this.pos = pos;
         this.res = res;
         this.work = work;
         this.ext = ext;
-        this.joinDt = joinDt;
-        this.resignDt = resignDt;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.role = role;
     }
 
@@ -56,13 +56,13 @@ public class StaffSaveRequestDto {
                 .id(id)
                 .name(name)
                 .engName(engName)
-                .dept(dept)
+                .team(team)
                 .pos(pos)
                 .res(res)
                 .work(work)
                 .ext(ext)
-                .joinDt(joinDt)
-                .resignDt(resignDt)
+                .startDate(startDate)
+                .endDate(endDate)
                 .role(role)
                 .build();
     }

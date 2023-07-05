@@ -1,5 +1,6 @@
 package jp.or.miya.web.dto.response.menu;
 
+import jp.or.miya.domain.base.Category;
 import jp.or.miya.domain.menu.Menu;
 import lombok.Getter;
 
@@ -13,13 +14,13 @@ import java.util.stream.Collectors;
 public class MenuListResponseDto {
     private Long id;
     private String part;
-    private String category;
+    private CategoryResponseDto category;
     private String name;
     private String engName;
     private String temp;
     private String sizes;
-    private LocalDateTime saleStartDt;
-    private LocalDateTime saleEndDt;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private Long price;
     private Integer season;
     private Integer pick;
@@ -28,19 +29,21 @@ public class MenuListResponseDto {
     public MenuListResponseDto (Menu entity) {
         this.id = entity.getId();
         this.part = entity.getPart();
-        this.category = entity.getCategory();
+        this.category = CategoryResponseDto.builder()
+                .id(entity.getCategory().getId())
+                .name(entity.getCategory().getName())
+                .build();
         this.name = entity.getName();
         this.engName = entity.getEngName();
         this.temp = entity.getTemp();
         this.sizes = entity.getSizes();
-        this.saleStartDt = entity.getSaleStartDt();
-        this.saleEndDt = entity.getSaleEndDt();
+        this.startDate = entity.getPeriod().getStartDate();
+        this.endDate = entity.getPeriod().getEndDate();
         this.price = entity.getPrice();
         this.season = entity.getSeason();
         this.pick = entity.getPick();
         if(!entity.getAttachFiles().isEmpty()) {
-//            this.fileId = entity.getAttachFiles().stream().sorted().collect(Collectors.toList()).get(0).getId();
-            this.fileId = List.copyOf(entity.getAttachFiles()).get(0).getId();
+            this.fileId = List.copyOf(entity.getAttachFiles()).get(0).getId(); // 수정 불가
         }
     }
 }

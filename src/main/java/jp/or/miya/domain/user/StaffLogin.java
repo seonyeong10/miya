@@ -1,6 +1,7 @@
 package jp.or.miya.domain.user;
 
 import jakarta.persistence.*;
+import jp.or.miya.domain.user.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
