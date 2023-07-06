@@ -1,6 +1,7 @@
 package jp.or.miya.domain.menu.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jp.or.miya.domain.menu.Menu;
@@ -16,6 +17,8 @@ import java.util.Map;
 
 import static jp.or.miya.domain.menu.QMenu.menu;
 import static jp.or.miya.domain.menu.QNutrient.nutrient;
+import static jp.or.miya.domain.file.QAttachFile.attachFile;
+import static jp.or.miya.domain.base.QCategory.category;
 import static org.springframework.util.StringUtils.hasText;
 
 @Repository
@@ -27,8 +30,13 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
     public Page<Menu> findAllComplex(SearchRequestDto dto, Pageable pageable) {
         List<Menu> content = queryFactory
                 .selectFrom(menu)
-                .leftJoin(menu.nutrient, nutrient)
-                .where(likeMenuName(dto), inCategory(dto))
+                .innerJoin(menu.category, category).fetchJoin()
+                .leftJoin(menu.nutrient, nutrient).fetchJoin()
+                .leftJoin(menu.attachFiles, attachFile).fetchJoin()
+                .where( attachFile.seq.isNull().or(attachFile.seq.eq(1)),
+                        likeMenuName(dto),
+                        inCategory(dto)
+                )
                 .offset(pageable.getOffset()) // 페이지 번호
                 .limit(pageable.getPageSize()) // 페이지 사이즈
                 .fetch();
@@ -45,7 +53,6 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
 
 
         return new PageImpl<>(content, pageable, count);
-//        return content;
     }
 
     public BooleanExpression likeMenuName (SearchRequestDto dto) {

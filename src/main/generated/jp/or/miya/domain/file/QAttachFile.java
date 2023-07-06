@@ -34,6 +34,8 @@ public class QAttachFile extends EntityPathBase<AttachFile> {
 
     public final StringPath orgName = createString("orgName");
 
+    public final NumberPath<Integer> seq = createNumber("seq", Integer.class);
+
     public final jp.or.miya.domain.staff.QStaff staff;
 
     public QAttachFile(String variable) {

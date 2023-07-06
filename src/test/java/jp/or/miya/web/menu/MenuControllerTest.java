@@ -87,7 +87,7 @@ public class MenuControllerTest {
 
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-        String dir = "/menus/drinks";
+        String dir = "/test";
 
         // 카테고리 저장
         Category parent = categoryRepository.saveAndFlush(Category.builder().name("Foods").build());
@@ -131,7 +131,7 @@ public class MenuControllerTest {
         // given
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         MockMultipartFile multipartFile2 = new MockMultipartFile("file", "hello2.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-        String dir = "/menus/drinks";
+        String dir = "/test";
 
         // 카테고리
         Category parent = categoryRepository.saveAndFlush(Category.builder().name("Foods").build());
@@ -275,7 +275,6 @@ public class MenuControllerTest {
     @Test
     public void table_test () throws Exception {
 //        System.out.println("fin");
-        menuRepository.findAllComplex(new SearchRequestDto(), PageRequest.of(0, 10)); // noSuchFieldException : modifyBy
-//        menuRepository.findAll(); // ok
+        menuRepository.findAllComplex(new SearchRequestDto(), PageRequest.of(0, 10));
     }
 }

@@ -17,9 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static jp.or.miya.lib.FileUtils.saveFiles;
 
 @Slf4j
 @Service
@@ -28,35 +31,34 @@ public class StaffService {
     private final String BASE_DIR = "D:/03. Project/07. Miya/uploads";
     private final StaffRepository staffRepository;
     private final AttachFileRepository fileRepository;
-    private final FileUtils fileUtils;
     @Transactional
     public ResponseEntity<?> saveWithFile (StaffSaveRequestDto requestDto, List<MultipartFile> files) {
         // 직원번호 생성
         String id = createId(staffRepository.findLatestId());
+        List<AttachFile> attachFiles = new ArrayList<>(); // 첨부파일
 
         if(id == null) {
             return new ResponseEntity<>("직원번호 생성 실패", HttpStatus.BAD_REQUEST);
         }
         requestDto.setId(id);
 
-        // 첨부파일 저장
-        Set<AttachFile> attachFiles = new HashSet<>();
-        try {
-            fileUtils.saveFiles(attachFiles, files, "/staff");
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
-        }
 
-        // 직원 저장
+
+
         /**
          * save 기본 동작은
          * 식별자(@ID)가 null 이면 persist()
          * 식별자가 null 이 아니면 merge
          * 식별자를 직접 할당하게되면 엔티티 save 시 무조건 식별자 값이 존재하므로 merge 수행 (insert -> update)
          */
-        Staff staff = staffRepository.save(requestDto.toEntity()); // insert
+        Staff staff = staffRepository.save(requestDto.toEntity()); // 직원 저장
         // 첨부파일(사진) 저장
+        try {
+            attachFiles = saveFiles(files, "/staff"); // 실제 파일 저장
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
+        }
         attachFiles.stream().forEach(file -> file.addStaff(staff)); // staff_id 저장
         fileRepository.saveAll(attachFiles); // insert
 

@@ -46,11 +46,11 @@ public class Menu extends BaseTimeEntity {
     private String expl;
 
     // 카테시안 곱으로 인한 중복 데이터 제거
+    @OneToMany(mappedBy = "menu")
+    private List<AttachFile> attachFiles = new ArrayList<>();
+    // Menu 저장할 때 Nutrient 함께 저장
     // orphanRemoval = true 고아 객체 제거
     // cascade = CascadeType.ALL Menu 저장할 때 attachFile 함께 저장
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AttachFile> attachFiles = new LinkedHashSet<>();
-    // Menu 저장할 때 Nutrient 함께 저장
     @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private Nutrient nutrient = new Nutrient();
 

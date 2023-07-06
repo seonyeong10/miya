@@ -8,6 +8,7 @@ import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
 import jp.or.miya.web.dto.response.menu.MenuListResponseDto;
 import jp.or.miya.web.dto.response.menu.MenuResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,14 +29,14 @@ public class MenuController {
     }
 
     @GetMapping("/api/v1/menus") // GET 은 RequestBody가 없음
-    public List<MenuListResponseDto> findAll (
+    public Page<MenuListResponseDto> findAll (
             SearchRequestDto requestDto
     ) {
         return service.findAll(requestDto);
     }
 
     @GetMapping("/api/v1/menus/{parentCategoryId}")
-    public List<MenuListResponseDto> findPart (
+    public Page<MenuListResponseDto> findPart (
             @PathVariable(value = "parentCategoryId") Long parentCategoryId,
             SearchRequestDto requestDto
     ) {

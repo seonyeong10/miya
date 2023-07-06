@@ -22,6 +22,7 @@ public class AttachFile {
     private String orgName;
     @Column
     private String dir;
+    private int seq; // 순서
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
@@ -32,13 +33,14 @@ public class AttachFile {
     private Staff staff;
 
     @Builder
-    public AttachFile (Long id, Long boardId, Menu menu, String name, String orgName, String dir) {
+    public AttachFile (Long id, Long boardId, Menu menu, String name, String orgName, String dir, int seq) {
         this.id = id;
         this.boardId = boardId;
         this.menu = menu;
         this.name = name;
         this.orgName = orgName;
         this.dir= dir;
+        this.seq = seq;
     }
 
     public AttachFile(AttachFileRequestDto.Save save) {
@@ -63,5 +65,13 @@ public class AttachFile {
     public void addMenu (Menu menu) {
         this.menu = menu;
         menu.getAttachFiles().add(this);
+    }
+
+    /**
+     * seq 값을 저장한다.
+     * @param seq
+     */
+    public void grantSeq (int seq) {
+        this.seq = seq;
     }
 }
