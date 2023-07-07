@@ -3,6 +3,7 @@ package jp.or.miya.web.staff;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.or.miya.service.staff.StaffService;
 import jp.or.miya.web.dto.request.staff.StaffSaveRequestDto;
+import jp.or.miya.web.dto.request.staff.StaffUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,17 @@ public class StaffController {
     @PostMapping("/api/v1/staff")
     public ResponseEntity<?> saveWithFile (
             @RequestPart(value = "content", required = false) StaffSaveRequestDto requestDto,
-            @RequestPart(value = "file", required = false) List<MultipartFile> files,
-            HttpServletRequest request
-    ) {
+            @RequestPart(value = "file", required = false) List<MultipartFile> files
+    ) throws Exception {
         return service.saveWithFile(requestDto, files);
+    }
+
+    @PostMapping("/api/v1/staff/{staff_id}")
+    public ResponseEntity<?> updateWithFile (
+            @PathVariable(value = "staff_id") String staffId,
+            @RequestPart(value = "content", required = false) StaffUpdateRequestDto requestDto,
+            @RequestPart(value = "file", required = false) List<MultipartFile> files
+    ) throws Exception {
+        return service.updateWithFIle(staffId, requestDto, files);
     }
 }

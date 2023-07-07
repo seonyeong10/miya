@@ -1,7 +1,6 @@
 package jp.or.miya.lib;
 
 import jp.or.miya.domain.file.AttachFile;
-import jp.or.miya.domain.menu.Menu;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +15,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Component
 public class FileUtils {
@@ -67,12 +65,16 @@ public class FileUtils {
     public static List<AttachFile> deleteFile (List<AttachFile> originalFiles, List<Long> remove) throws  IOException {
         List<AttachFile> removedFiles = new ArrayList<>(); // return value
 
+        if(remove.isEmpty() || remove == null) {
+            return new ArrayList<>();
+        }
+
         for(Long i : remove) {
             AttachFile file = originalFiles.stream().filter(f -> f.getId() == i).findAny().orElseThrow(() -> new NoSuchElementException("첨부파일이 없습니다. file_id = " + i));
             Path path = Paths.get(BASE_DIR + file.getDir() + File.separator + file.getName());
 
             Files.deleteIfExists(path); // 파일 삭제
-            removedFiles.remove(file);
+            removedFiles.add(file);
         } // for
 
         return removedFiles;

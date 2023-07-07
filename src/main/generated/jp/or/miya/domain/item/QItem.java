@@ -1,4 +1,4 @@
-package jp.or.miya.domain.staff;
+package jp.or.miya.domain.item;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -11,20 +11,22 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QStaff is a Querydsl query type for Staff
+ * QItem is a Querydsl query type for Item
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QStaff extends EntityPathBase<Staff> {
+public class QItem extends EntityPathBase<Item> {
 
-    private static final long serialVersionUID = 269474607L;
+    private static final long serialVersionUID = 1997847915L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QStaff staff = new QStaff("staff");
+    public static final QItem item = new QItem("item");
 
     public final jp.or.miya.domain.QBaseTimeEntity _super = new jp.or.miya.domain.QBaseTimeEntity(this);
 
     public final ListPath<jp.or.miya.domain.file.AttachFile, jp.or.miya.domain.file.QAttachFile> attachFiles = this.<jp.or.miya.domain.file.AttachFile, jp.or.miya.domain.file.QAttachFile>createList("attachFiles", jp.or.miya.domain.file.AttachFile.class, jp.or.miya.domain.file.QAttachFile.class, PathInits.DIRECT2);
+
+    public final jp.or.miya.domain.base.QCategory category;
 
     //inherited
     public final StringPath createdBy = _super.createdBy;
@@ -34,9 +36,9 @@ public class QStaff extends EntityPathBase<Staff> {
 
     public final StringPath engName = createString("engName");
 
-    public final StringPath ext = createString("ext");
+    public final StringPath etc = createString("etc");
 
-    public final StringPath id = createString("id");
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     //inherited
     public final StringPath modifiedBy = _super.modifiedBy;
@@ -48,38 +50,32 @@ public class QStaff extends EntityPathBase<Staff> {
 
     public final jp.or.miya.domain.QPeriod period;
 
-    public final EnumPath<jp.or.miya.domain.staff.enums.Position> pos = createEnum("pos", jp.or.miya.domain.staff.enums.Position.class);
+    public final StringPath pick = createString("pick");
 
-    public final StringPath pw = createString("pw");
+    public final NumberPath<Integer> price = createNumber("price", Integer.class);
 
-    public final EnumPath<jp.or.miya.domain.staff.enums.Responsibility> res = createEnum("res", jp.or.miya.domain.staff.enums.Responsibility.class);
+    public final StringPath season = createString("season");
 
-    public final EnumPath<jp.or.miya.domain.user.enums.Role> role = createEnum("role", jp.or.miya.domain.user.enums.Role.class);
-
-    public final QTeam team;
-
-    public final EnumPath<jp.or.miya.domain.staff.enums.Work> work = createEnum("work", jp.or.miya.domain.staff.enums.Work.class);
-
-    public QStaff(String variable) {
-        this(Staff.class, forVariable(variable), INITS);
+    public QItem(String variable) {
+        this(Item.class, forVariable(variable), INITS);
     }
 
-    public QStaff(Path<? extends Staff> path) {
+    public QItem(Path<? extends Item> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QStaff(PathMetadata metadata) {
+    public QItem(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QStaff(PathMetadata metadata, PathInits inits) {
-        this(Staff.class, metadata, inits);
+    public QItem(PathMetadata metadata, PathInits inits) {
+        this(Item.class, metadata, inits);
     }
 
-    public QStaff(Class<? extends Staff> type, PathMetadata metadata, PathInits inits) {
+    public QItem(Class<? extends Item> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.category = inits.isInitialized("category") ? new jp.or.miya.domain.base.QCategory(forProperty("category"), inits.get("category")) : null;
         this.period = inits.isInitialized("period") ? new jp.or.miya.domain.QPeriod(forProperty("period")) : null;
-        this.team = inits.isInitialized("team") ? new QTeam(forProperty("team")) : null;
     }
 
 }

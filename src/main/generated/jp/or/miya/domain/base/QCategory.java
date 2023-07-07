@@ -24,7 +24,7 @@ public class QCategory extends EntityPathBase<Category> {
 
     public final jp.or.miya.domain.QBaseTimeEntity _super = new jp.or.miya.domain.QBaseTimeEntity(this);
 
-    public final ListPath<Category, QCategory> child = this.<Category, QCategory>createList("child", Category.class, QCategory.class, PathInits.DIRECT2);
+    public final ListPath<Category, QCategory> children = this.<Category, QCategory>createList("children", Category.class, QCategory.class, PathInits.DIRECT2);
 
     //inherited
     public final StringPath createdBy = _super.createdBy;

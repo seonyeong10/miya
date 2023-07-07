@@ -1,16 +1,14 @@
 package jp.or.miya.service.menu;
 
-import jp.or.miya.config.jwt.JwtTokenProvider;
 import jp.or.miya.domain.base.Category;
 import jp.or.miya.domain.base.repository.CategoryRepository;
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.repository.AttachFileRepository;
-import jp.or.miya.domain.menu.Menu;
-import jp.or.miya.domain.menu.repository.MenuRepository;
-import jp.or.miya.domain.menu.Nutrient;
-import jp.or.miya.domain.menu.repository.MenuRepositoryImpl;
-import jp.or.miya.domain.menu.repository.NutrientRepository;
-import jp.or.miya.lib.FileUtils;
+import jp.or.miya.domain.item.Item;
+import jp.or.miya.domain.item.Menu;
+import jp.or.miya.domain.item.repository.MenuRepository;
+import jp.or.miya.domain.item.Nutrient;
+import jp.or.miya.domain.item.repository.NutrientRepository;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -19,7 +17,6 @@ import jp.or.miya.web.dto.response.menu.MenuResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -62,7 +59,7 @@ public class MenuService {
             log.error(e.getMessage());
             return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
         }
-        attachFiles.stream().forEach(file -> file.addMenu(menu)); // 메뉴 등록
+        attachFiles.forEach(file -> file.addItem(menu)); // 메뉴 등록
         fileRepository.saveAll(attachFiles); // insert
 
         return ResponseEntity.ok(menu.getId());
@@ -71,7 +68,7 @@ public class MenuService {
     @Transactional
     public ResponseEntity<?> updateWithFile (Long id, MenuUpdateRequestDto requestDto, List<MultipartFile> files) {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다. id = " + id));
-        List<AttachFile> attachFiles = menu.getAttachFiles(); // 기존 첨부파일
+        List<AttachFile> attachFiles = menu.getAttachFiles();
         Nutrient nutrient = menu.getNutrient(); // 기존 영양정보
 
         // 파일 삭제
@@ -84,7 +81,7 @@ public class MenuService {
 
         // 신규 파일 저장
         try {
-            attachFiles.addAll(saveFiles(files, requestDto.getDir()));
+            attachFiles.addAll(saveFiles(files, "/staff"));
         } catch (IOException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("파일 업로드 실패", HttpStatus.BAD_REQUEST);
@@ -106,14 +103,6 @@ public class MenuService {
          */
         return menuRepository.findAllComplex(requestDto, page)
                 .map(MenuListResponseDto::new);
-    }
-
-    public List<MenuListResponseDto> findPart (String part, SearchRequestDto requestDto) {
-        PageRequest page = PageRequest.of(requestDto.getPage(), requestDto.getPage() + 10, Sort.by(Sort.Direction.DESC, "id"));
-
-        return menuRepository.findByPartOrderByIdDesc(part, page).stream()
-                .map(MenuListResponseDto::new)
-                .collect(Collectors.toList());
     }
 
     public MenuResponseDto findOne (Long id) {

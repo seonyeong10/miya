@@ -2,6 +2,7 @@ package jp.or.miya.domain.user;
 
 import jakarta.persistence.*;
 import jp.or.miya.domain.user.enums.Role;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@Entity
 public class StaffLogin implements UserDetails {
     @Id

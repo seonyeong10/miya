@@ -1,4 +1,4 @@
-package jp.or.miya.domain.menu;
+package jp.or.miya.domain.item;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,49 +16,57 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QMenu extends EntityPathBase<Menu> {
 
-    private static final long serialVersionUID = -1682617109L;
+    private static final long serialVersionUID = 1997952951L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QMenu menu = new QMenu("menu");
 
-    public final jp.or.miya.domain.QBaseTimeEntity _super = new jp.or.miya.domain.QBaseTimeEntity(this);
+    public final QItem _super;
 
-    public final ListPath<jp.or.miya.domain.file.AttachFile, jp.or.miya.domain.file.QAttachFile> attachFiles = this.<jp.or.miya.domain.file.AttachFile, jp.or.miya.domain.file.QAttachFile>createList("attachFiles", jp.or.miya.domain.file.AttachFile.class, jp.or.miya.domain.file.QAttachFile.class, PathInits.DIRECT2);
+    //inherited
+    public final ListPath<jp.or.miya.domain.file.AttachFile, jp.or.miya.domain.file.QAttachFile> attachFiles;
 
+    // inherited
     public final jp.or.miya.domain.base.QCategory category;
 
     //inherited
-    public final StringPath createdBy = _super.createdBy;
+    public final StringPath createdBy;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
-
-    public final StringPath engName = createString("engName");
-
-    public final StringPath expl = createString("expl");
-
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    public final DateTimePath<java.time.LocalDateTime> createdDate;
 
     //inherited
-    public final StringPath modifiedBy = _super.modifiedBy;
+    public final StringPath engName;
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
+    public final StringPath etc;
 
-    public final StringPath name = createString("name");
+    //inherited
+    public final NumberPath<Long> id;
+
+    //inherited
+    public final StringPath modifiedBy;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> modifiedDate;
+
+    //inherited
+    public final StringPath name;
 
     public final QNutrient nutrient;
 
-    public final StringPath part = createString("part");
-
+    // inherited
     public final jp.or.miya.domain.QPeriod period;
 
-    public final NumberPath<Integer> pick = createNumber("pick", Integer.class);
+    //inherited
+    public final StringPath pick;
 
-    public final NumberPath<Long> price = createNumber("price", Long.class);
+    //inherited
+    public final NumberPath<Integer> price;
 
-    public final NumberPath<Integer> season = createNumber("season", Integer.class);
+    //inherited
+    public final StringPath season;
 
     public final StringPath sizes = createString("sizes");
 
@@ -82,9 +90,22 @@ public class QMenu extends EntityPathBase<Menu> {
 
     public QMenu(Class<? extends Menu> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.category = inits.isInitialized("category") ? new jp.or.miya.domain.base.QCategory(forProperty("category"), inits.get("category")) : null;
+        this._super = new QItem(type, metadata, inits);
+        this.attachFiles = _super.attachFiles;
+        this.category = _super.category;
+        this.createdBy = _super.createdBy;
+        this.createdDate = _super.createdDate;
+        this.engName = _super.engName;
+        this.etc = _super.etc;
+        this.id = _super.id;
+        this.modifiedBy = _super.modifiedBy;
+        this.modifiedDate = _super.modifiedDate;
+        this.name = _super.name;
         this.nutrient = inits.isInitialized("nutrient") ? new QNutrient(forProperty("nutrient"), inits.get("nutrient")) : null;
-        this.period = inits.isInitialized("period") ? new jp.or.miya.domain.QPeriod(forProperty("period")) : null;
+        this.period = _super.period;
+        this.pick = _super.pick;
+        this.price = _super.price;
+        this.season = _super.season;
     }
 
 }

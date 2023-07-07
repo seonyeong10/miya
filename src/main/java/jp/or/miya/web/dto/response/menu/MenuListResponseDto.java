@@ -1,19 +1,14 @@
 package jp.or.miya.web.dto.response.menu;
 
-import jp.or.miya.domain.base.Category;
-import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.item.Menu;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 public class MenuListResponseDto {
     private Long id;
-    private String part;
     private CategoryResponseDto category;
     private String name;
     private String engName;
@@ -21,14 +16,13 @@ public class MenuListResponseDto {
     private String sizes;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Long price;
-    private Integer season;
-    private Integer pick;
+    private int price;
+    private String season;
+    private String pick;
     private Long fileId = 0L;
 
     public MenuListResponseDto (Menu entity) {
         this.id = entity.getId();
-        this.part = entity.getPart();
         this.category = CategoryResponseDto.builder()
                 .id(entity.getCategory().getId())
                 .name(entity.getCategory().getName())

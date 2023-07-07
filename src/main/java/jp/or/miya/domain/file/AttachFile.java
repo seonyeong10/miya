@@ -1,21 +1,20 @@
 package jp.or.miya.domain.file;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.item.Item;
+import jp.or.miya.domain.item.Menu;
 import jp.or.miya.domain.staff.Staff;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class AttachFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "attach_file_id")
     private Long id;
-    @Column
-    private Long boardId;
     @Column
     private String name;
     @Column
@@ -25,18 +24,17 @@ public class AttachFile {
     private int seq; // 순서
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    private Menu menu;
+    @JoinColumn(name = "item_id")
+    private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JoinColumn(name = "staff_id")
     private Staff staff;
 
     @Builder
-    public AttachFile (Long id, Long boardId, Menu menu, String name, String orgName, String dir, int seq) {
+    public AttachFile (Long id, Item item, String name, String orgName, String dir, int seq) {
         this.id = id;
-        this.boardId = boardId;
-        this.menu = menu;
+        this.item = item;
         this.name = name;
         this.orgName = orgName;
         this.dir= dir;
@@ -60,18 +58,18 @@ public class AttachFile {
 
     /**
      * 메뉴를 저장한다.
-     * @param menu
+     * @param item
      */
-    public void addMenu (Menu menu) {
-        this.menu = menu;
-        menu.getAttachFiles().add(this);
+    public void addItem (Item item) {
+        this.item = item;
+        item.getAttachFiles().add(this);
     }
 
     /**
      * seq 값을 저장한다.
      * @param seq
      */
-    public void grantSeq (int seq) {
+    public void addSeq (int seq) {
         this.seq = seq;
     }
 }

@@ -1,10 +1,8 @@
-package jp.or.miya.domain.menu.repository;
+package jp.or.miya.domain.item.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jp.or.miya.domain.menu.Menu;
+import jp.or.miya.domain.item.Menu;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,10 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
-import static jp.or.miya.domain.menu.QMenu.menu;
-import static jp.or.miya.domain.menu.QNutrient.nutrient;
+import static jp.or.miya.domain.item.QMenu.menu;
+import static jp.or.miya.domain.item.QNutrient.nutrient;
 import static jp.or.miya.domain.file.QAttachFile.attachFile;
 import static jp.or.miya.domain.base.QCategory.category;
 import static org.springframework.util.StringUtils.hasText;
@@ -31,7 +28,6 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         List<Menu> content = queryFactory
                 .selectFrom(menu)
                 .innerJoin(menu.category, category).fetchJoin()
-                .leftJoin(menu.nutrient, nutrient).fetchJoin()
                 .leftJoin(menu.attachFiles, attachFile).fetchJoin()
                 .where( attachFile.seq.isNull().or(attachFile.seq.eq(1)),
                         likeMenuName(dto),

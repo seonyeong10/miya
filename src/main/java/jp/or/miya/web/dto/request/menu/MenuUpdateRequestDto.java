@@ -28,10 +28,10 @@ public class MenuUpdateRequestDto {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;
-    private Long price;
-    private Integer season;
-    private Integer pick;
-    private String expl;
+    private int price;
+    private String season;
+    private String pick;
+    private String etc;
     private Long calorie;
     private int carbohydrate;
     private int sugar;
@@ -48,7 +48,7 @@ public class MenuUpdateRequestDto {
 
     @Builder
     public MenuUpdateRequestDto (
-            String name, String engName, String temp, String sizes, LocalDateTime startDate, LocalDateTime endDate, Long price, Integer season, Integer pick, String expl,
+            String name, String engName, String temp, String sizes, LocalDateTime startDate, LocalDateTime endDate, int price, String season, String pick, String etc,
             Long calorie, int carbohydrate, int sugar, int protein, int fat, int saturFat, int transFat, int cholesterol, int caffeine, int sodium,
             String dir, List<Long> remove
     ) {
@@ -61,7 +61,7 @@ public class MenuUpdateRequestDto {
         this.price = price;
         this.season = season;
         this.pick = pick;
-        this.expl = expl;
+        this.etc = etc;
         this.calorie = calorie;
         this.carbohydrate = carbohydrate;
         this.sugar = sugar;

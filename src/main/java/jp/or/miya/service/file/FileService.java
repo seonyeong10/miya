@@ -2,8 +2,8 @@ package jp.or.miya.service.file;
 
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.repository.AttachFileRepository;
-import jp.or.miya.domain.menu.Menu;
-import jp.or.miya.domain.menu.repository.MenuRepository;
+import jp.or.miya.domain.item.Menu;
+import jp.or.miya.domain.item.repository.MenuRepository;
 import jp.or.miya.web.dto.request.AttachFileRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class FileService {
             String ext = orgName.substring(orgName.lastIndexOf("."));
             AttachFile attachFile = AttachFile.builder()
 //                    .boardId(upload.getBoardId())
-                    .menu(menu)
+                    .item(menu)
                     .name(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli() + ext)
                     .orgName(orgName)
                     .dir(upload.getDir())

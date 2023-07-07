@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Embeddable
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Period {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -42,19 +44,5 @@ public class Period {
     @Override
     public int hashCode() {
         return Objects.hash(getStartDate(), getEndDate());
-    }
-
-    public LocalDateTime getStartDate() {
-        if(this.startDate == null) {
-            return null;
-        }
-        return this.startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        if(this.endDate == null) {
-            return null;
-        }
-        return this.endDate;
     }
 }

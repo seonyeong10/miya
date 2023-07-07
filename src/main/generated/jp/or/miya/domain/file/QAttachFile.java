@@ -22,13 +22,11 @@ public class QAttachFile extends EntityPathBase<AttachFile> {
 
     public static final QAttachFile attachFile = new QAttachFile("attachFile");
 
-    public final NumberPath<Long> boardId = createNumber("boardId", Long.class);
-
     public final StringPath dir = createString("dir");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final jp.or.miya.domain.menu.QMenu menu;
+    public final jp.or.miya.domain.item.QItem item;
 
     public final StringPath name = createString("name");
 
@@ -56,7 +54,7 @@ public class QAttachFile extends EntityPathBase<AttachFile> {
 
     public QAttachFile(Class<? extends AttachFile> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.menu = inits.isInitialized("menu") ? new jp.or.miya.domain.menu.QMenu(forProperty("menu"), inits.get("menu")) : null;
+        this.item = inits.isInitialized("item") ? new jp.or.miya.domain.item.QItem(forProperty("item"), inits.get("item")) : null;
         this.staff = inits.isInitialized("staff") ? new jp.or.miya.domain.staff.QStaff(forProperty("staff"), inits.get("staff")) : null;
     }
 

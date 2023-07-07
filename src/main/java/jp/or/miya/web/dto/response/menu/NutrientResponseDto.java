@@ -1,6 +1,6 @@
 package jp.or.miya.web.dto.response.menu;
 
-import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.domain.item.Nutrient;
 import lombok.Getter;
 
 @Getter

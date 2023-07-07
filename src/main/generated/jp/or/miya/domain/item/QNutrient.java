@@ -1,4 +1,4 @@
-package jp.or.miya.domain.menu;
+package jp.or.miya.domain.item;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNutrient extends EntityPathBase<Nutrient> {
 
-    private static final long serialVersionUID = -1247293069L;
+    private static final long serialVersionUID = -1867606465L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

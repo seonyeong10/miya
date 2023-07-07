@@ -35,15 +35,6 @@ public class MenuController {
         return service.findAll(requestDto);
     }
 
-    @GetMapping("/api/v1/menus/{parentCategoryId}")
-    public Page<MenuListResponseDto> findPart (
-            @PathVariable(value = "parentCategoryId") Long parentCategoryId,
-            SearchRequestDto requestDto
-    ) {
-        requestDto.setParentCategoryId(parentCategoryId);
-        return service.findAll(requestDto);
-    }
-
     @GetMapping("/api/menus/{part}/{id}")
     public MenuResponseDto findOne (
             @PathVariable(value = "id") Long id

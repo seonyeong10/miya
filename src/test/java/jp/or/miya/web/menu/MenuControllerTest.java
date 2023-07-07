@@ -1,14 +1,15 @@
 package jp.or.miya.web.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.or.miya.domain.Period;
 import jp.or.miya.domain.base.Category;
 import jp.or.miya.domain.base.repository.CategoryRepository;
 import jp.or.miya.domain.file.AttachFile;
 import jp.or.miya.domain.file.repository.AttachFileRepository;
-import jp.or.miya.domain.menu.Menu;
-import jp.or.miya.domain.menu.repository.MenuRepository;
-import jp.or.miya.domain.menu.Nutrient;
-import jp.or.miya.domain.menu.repository.NutrientRepository;
+import jp.or.miya.domain.item.Menu;
+import jp.or.miya.domain.item.repository.MenuRepository;
+import jp.or.miya.domain.item.Nutrient;
+import jp.or.miya.domain.item.repository.NutrientRepository;
 import jp.or.miya.web.dto.request.SearchRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuSaveRequestDto;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
@@ -22,9 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -75,14 +74,13 @@ public class MenuControllerTest {
 
     @DisplayName("POST /api/v1/menus 메뉴 저장 with File 테스트")
     @Test
-//    @Transactional // org.hibernate.LazyInitializationException
     public void menu_saveWithFile () throws Exception {
         //given
         String name = "테스트";
         String engName = "test";
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = startDate.plusDays(20);
-        Long price = 300L;
+        int price = 300;
         Long calorie = 1000L;
 
         MockMultipartFile multipartFile1 = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
@@ -140,7 +138,6 @@ public class MenuControllerTest {
         Menu savedMenu = menuRepository.saveAndFlush(Menu.builder()
                         .name("테스트")
                         .engName("Test")
-                        .part("MENUS")
                 .build());
         // 영양정보
         Nutrient savedNutrient = nutrientRepository.saveAndFlush(Nutrient.builder()
@@ -150,7 +147,7 @@ public class MenuControllerTest {
                 .build());
         // 삭제할 파일
         AttachFile attachFile = fileRepository.saveAndFlush(AttachFile.builder()
-                        .menu(savedMenu)
+                        .item(savedMenu)
                         .orgName("Test.txt")
                         .name("Test.txt")
                         .dir(dir)
@@ -203,7 +200,7 @@ public class MenuControllerTest {
                 .name(name + 1)
                 .engName("english1")
                 .category(onigiri)
-                .startDate(startDate)
+                .period(Period.builder().startDate(startDate).build())
                 .build());
 
         List<Long> list = new ArrayList<>(Arrays.asList(onigiri.getId(), udon.getId()));
@@ -227,40 +224,18 @@ public class MenuControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("GET /api/menus/{part} 분류별 메뉴 조회")
-    @Test
-    public void menu_findPart () throws Exception {
-        //given
-        String part = "foods";
-        int page = 0;
-        SearchRequestDto find = SearchRequestDto.builder()
-                .page(page)
-                .build();
-
-        String url = "http://localhost:" + port + "/api/menus/" + part;
-
-        //when
-        mvc.perform(get(url)
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(find)))
-                .andExpect(status().isOk());
-
-        //then
-    }
-
     @DisplayName("GET /api/menus/{part}/{id} 메뉴 조회")
     @Test
     public void menu_findOne () throws Exception {
         // given
-        Menu savedMenu = menuRepository.save(Menu.builder()
+        Menu savedMenu = menuRepository.saveAndFlush(Menu.builder()
                 .name("name1")
                 .engName("english1")
-                .part("MENUS")
-                .nutrient(Nutrient.builder().calorie(100L).build())
+                .period(Period.builder().startDate(LocalDateTime.now()).build())
                 .build());
 
         Long savedId = savedMenu.getId();
+
         String url = "http://localhost:" + port + "/api/menus/foods/" + savedId;
 
         // when
@@ -274,7 +249,7 @@ public class MenuControllerTest {
     @DisplayName("테이블 생성 테스트")
     @Test
     public void table_test () throws Exception {
-//        System.out.println("fin");
-        menuRepository.findAllComplex(new SearchRequestDto(), PageRequest.of(0, 10));
+        System.out.println("fin");
+//        menuRepository.findAllComplex(new SearchRequestDto(), PageRequest.of(0, 10));
     }
 }

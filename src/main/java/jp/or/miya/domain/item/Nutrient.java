@@ -1,19 +1,21 @@
-package jp.or.miya.domain.menu;
+package jp.or.miya.domain.item;
 
 import jakarta.persistence.*;
 import jp.or.miya.web.dto.request.menu.MenuUpdateRequestDto;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Nutrient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "nutrient_id")
     private Long id;
-    private Long calorie;
+    private Long calorie = 0L; // NPE
     private int carbohydrate;
     private int sugar;
     private int protein;
@@ -25,7 +27,7 @@ public class Nutrient {
     private int sodium;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id")
+    @JoinColumn(name = "item_id")
     private Menu menu;
 
     @Builder

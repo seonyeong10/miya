@@ -9,6 +9,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -30,4 +31,7 @@ public class BaseTimeEntity {
     private String modifiedBy;
     @LastModifiedDate // Entity의 값을 수정할 때 시간이 자동으로 저장
     private LocalDateTime modifiedDate;
+
+    protected BaseTimeEntity() {
+    }
 }

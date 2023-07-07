@@ -2,19 +2,31 @@ package jp.or.miya.domain.base;
 
 import jakarta.persistence.*;
 import jp.or.miya.domain.BaseTimeEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Contents extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "contents_id")
     private Long id;
-    @Column(name = "p_id")
-    private Long pId;
+    /* 트리 구조 */
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Contents parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Contents> children = new ArrayList<>();
+    /* 트리 구조 */
+
     @Column(name = "sort")
     private String sort;
     @Column(nullable = false, name = "name")
@@ -28,14 +40,15 @@ public class Contents extends BaseTimeEntity {
     @Column(name = "use_yn")
     private Integer useYn;
 
-    @Builder Contents(Long id, Long pId, String sort, String name, Integer seq, String url, String accRole, Integer useYn) {
+    @Builder Contents(Long id, Contents parent, List<Contents> children, String sort, String name, Integer seq, String url, String accRole, Integer useYn) {
         this.id = id;
-        this.pId = pId;
+        this.parent = parent;
         this.sort = sort;
         this.name = name;
         this.seq = seq;
         this.url = url;
         this.accRole = accRole;
         this.useYn = useYn;
+        this.children = children;
     }
 }

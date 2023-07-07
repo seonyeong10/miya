@@ -10,14 +10,14 @@ public class SHA256 {
         System.out.println(sha256.encrypt("miya"));
     }
 
-    public String encrypt(String password) throws NoSuchAlgorithmException {
+    public static String encrypt(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(password.getBytes());
 
         return bytesToHex(md.digest());
     }
 
-    public String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02x", b));

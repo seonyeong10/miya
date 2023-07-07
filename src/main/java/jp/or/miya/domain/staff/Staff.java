@@ -11,6 +11,8 @@ import jp.or.miya.domain.staff.enums.Position;
 import jp.or.miya.domain.staff.enums.Responsibility;
 import jp.or.miya.domain.staff.enums.Work;
 import jp.or.miya.domain.user.enums.Role;
+import jp.or.miya.web.dto.request.staff.StaffUpdateRequestDto;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,18 +23,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Staff extends BaseTimeEntity implements UserDetails, Persistable<String> {
     @Id
-    @Column(name = "emp_no", nullable = false, length = 10)
+    @Column(name = "staff_id", nullable = false, length = 10)
     private String id; // 사번
     @Column(nullable = false, length = 10)
     private String name; // 이름
@@ -53,11 +53,11 @@ public class Staff extends BaseTimeEntity implements UserDetails, Persistable<St
     @Enumerated(EnumType.STRING)
     private Role role; // 권한
     private String pw; // 비밀번호
-    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<AttachFile> attachFiles = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AttachFile> attachFiles = new ArrayList<>();
 
     @Builder
-    public Staff(String id, String name, String engName, Team team, Position pos, Responsibility res, Work work, String ext, LocalDateTime startDate, LocalDateTime endDate, Role role, String pw, Set<AttachFile> attachFiles) {
+    public Staff(String id, String name, String engName, Team team, Position pos, Responsibility res, Work work, String ext, LocalDateTime startDate, LocalDateTime endDate, Role role, String pw) {
         this.id = id;
         this.name = name;
         this.engName = engName;
@@ -69,7 +69,6 @@ public class Staff extends BaseTimeEntity implements UserDetails, Persistable<St
         this.period = Period.builder().startDate(startDate).endDate(endDate).build();
         this.role = role;
         this.pw = pw;
-        this.attachFiles = attachFiles;
     }
 
     @Builder
@@ -120,5 +119,22 @@ public class Staff extends BaseTimeEntity implements UserDetails, Persistable<St
     public boolean isNew() {
         // 등록일자가 null 이 아니면 insert
         return getCreatedDate() == null;
+    }
+
+    public void addPassword (String pw) {
+        this.pw = pw;
+    }
+
+    /* 비지니스 메서드 */
+    public void update(StaffUpdateRequestDto dto) {
+        this.name = dto.getName();
+        this.engName = dto.getEngName();
+        this.team = dto.getTeam();
+        this.pos = dto.getPos();
+        this.res = dto.getRes();
+        this.work = dto.getWork();
+        this.ext = dto.getExt();
+        this.role = dto.getRole();
+        this.pw = dto.getPw();
     }
 }

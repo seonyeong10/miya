@@ -1,6 +1,6 @@
-package jp.or.miya.domain.menu.repository;
+package jp.or.miya.domain.item.repository;
 
-import jp.or.miya.domain.menu.Nutrient;
+import jp.or.miya.domain.item.Nutrient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NutrientRepository extends JpaRepository<Nutrient, String> {
